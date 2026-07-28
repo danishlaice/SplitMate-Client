@@ -288,7 +288,7 @@ const totalExpense = expenses.reduce((total, expense) => {
   <div className="space-y-4">
 
     {balanceData &&
-      balanceData.balances.map((member) => (
+  Object.values(balanceData.balances).map((member) => (
         <div
           key={member.name}
           className="bg-slate-800 rounded-xl p-5 border border-slate-700"
@@ -301,22 +301,22 @@ const totalExpense = expenses.reduce((total, expense) => {
               </h3>
 
               <p className="text-slate-400">
-                Paid: ₹ {member.paid}
+               Paid: ₹ {Number(member.paid).toFixed(2)}
               </p>
 
               <p className="text-slate-400">
-                Should Pay: ₹ {member.shouldPay}
-              </p>
+  Should Pay: ₹ {Number(member.owes).toFixed(2)}
+</p>
             </div>
 
             <div>
               {member.balance > 0 ? (
                 <span className="bg-green-600 px-4 py-2 rounded-lg text-white font-semibold">
-                  Gets ₹{member.balance}
+                  Gets ₹{Number(member.balance).toFixed(2)}
                 </span>
               ) : member.balance < 0 ? (
                 <span className="bg-red-600 px-4 py-2 rounded-lg text-white font-semibold">
-                  Pays ₹{Math.abs(member.balance)}
+                 Pays ₹{Math.abs(member.balance).toFixed(2)}
                 </span>
               ) : (
                 <span className="bg-blue-600 px-4 py-2 rounded-lg text-white font-semibold">
@@ -330,6 +330,55 @@ const totalExpense = expenses.reduce((total, expense) => {
       ))}
 
   </div>
+
+</div>
+<div className="bg-slate-900 border border-slate-700 rounded-2xl p-6 shadow-lg mt-8">
+
+  <h2 className="text-2xl font-bold text-white mb-6">
+    💸 Settlement Suggestions
+  </h2>
+
+  {balanceData?.settlements?.length > 0 ? (
+
+    <div className="space-y-4">
+
+      {balanceData.settlements.map((item, index) => (
+
+        <div
+          key={index}
+          className="bg-slate-800 border border-slate-700 rounded-xl p-5 flex justify-between items-center"
+        >
+
+          <div>
+
+            <h3 className="text-white text-lg font-semibold">
+              {item.from}
+            </h3>
+
+            <p className="text-slate-400">
+  Pay ₹{Number(item.amount).toFixed(2)} to{" "}
+  <span className="text-green-400 font-semibold">
+    {item.to}
+  </span>
+</p>
+
+          </div>
+
+          <span className="text-3xl">💸</span>
+
+        </div>
+
+      ))}
+
+    </div>
+
+  ) : (
+
+    <p className="text-green-400">
+      🎉 Everyone is settled.
+    </p>
+
+  )}
 
 </div>
 
