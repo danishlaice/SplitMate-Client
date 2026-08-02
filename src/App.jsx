@@ -4,7 +4,9 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import GroupDetails from "./pages/GroupDetails";
+import JoinGroup from "./pages/JoinGroup";
 import ProtectedRoute from "./components/ProtectedRoute";
+
 
 function App() {
   return (
@@ -24,6 +26,7 @@ function App() {
         />
 
         <Route path="/group/:id" element={<GroupDetails />} />
+        <Route path="/join/:inviteCode" element={<JoinGroup />} />
       </Routes>
     </BrowserRouter>
   );

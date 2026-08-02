@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import API from "../services/api";
+import { QRCodeCanvas } from "qrcode.react";
 
 function GroupDetails() {
   const { id } = useParams();
@@ -61,6 +62,7 @@ const fetchBalance = async () => {
         Authorization: `Bearer ${token}`,
       },
     });
+    console.log(res.data);
 
     setBalanceData(res.data);
   } catch (error) {
@@ -192,6 +194,61 @@ const totalExpense = expenses.reduce((total, expense) => {
       <div className="max-w-6xl mx-auto px-6 py-8">
 
   <div className="bg-slate-900 border border-slate-700 rounded-2xl p-8 shadow-lg">
+  <div className="bg-slate-900 border border-slate-700 rounded-2xl p-6 shadow-lg mt-8">
+
+  <h2 className="text-2xl font-bold text-white mb-5">
+    📱 Invite QR Code
+  </h2>
+
+  <div className="flex flex-col items-center">
+
+    <QRCodeCanvas
+      value={`https://split-mate-client-one.vercel.app/join/${group.inviteCode}`}
+      size={220}
+      bgColor="#ffffff"
+      fgColor="#000000"
+    />
+
+    <p className="text-white mt-5">
+      Invite Code
+    </p>
+
+    <p className="text-green-400 text-xl font-bold tracking-widest">
+      {group.inviteCode}
+    </p>
+    <div className="flex flex-col gap-3 mt-5">
+
+  <button
+    onClick={() => {
+      navigator.clipboard.writeText(group.inviteCode);
+      alert("Invite Code Copied!");
+    }}
+    className="bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl"
+  >
+    📋 Copy Invite Code
+  </button>
+
+  <button
+    onClick={() => {
+      navigator.clipboard.writeText(
+        `https://split-mate-client-one.vercel.app/join/${group.inviteCode}`
+      );
+      alert("Invite Link Copied!");
+    }}
+    className="bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl"
+  >
+    🔗 Copy Invite Link
+  </button>
+
+</div>
+
+    <p className="text-slate-400 mt-3 text-center">
+      Scan this QR code or use the invite code to join this group.
+    </p>
+
+  </div>
+
+</div>
 
     <h1 className="text-5xl font-bold text-white mb-6">
       {group.name}
@@ -244,33 +301,6 @@ const totalExpense = expenses.reduce((total, expense) => {
         <span className="text-2xl">👤</span>
       </div>
     ))}
-
-  </div>
-
-</div>
-
-<div className="bg-slate-900 border border-slate-700 rounded-2xl p-6 shadow-lg mt-8">
-
-  <h2 className="text-2xl font-bold text-white mb-6">
-    ➕ Add Member
-  </h2>
-
-  <div className="flex flex-col md:flex-row gap-4">
-
-    <input
-      type="email"
-      placeholder="Enter member email"
-      value={memberEmail}
-      onChange={(e) => setMemberEmail(e.target.value)}
-      className="flex-1 bg-slate-800 border border-slate-600 rounded-lg px-4 py-3 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-    />
-
-    <button
-      onClick={addMember}
-      className="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg text-white font-semibold transition"
-    >
-      Add Member
-    </button>
 
   </div>
 

@@ -2,10 +2,16 @@ import Navbar from "../components/Navbar";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import API from "../services/api";
+import { Scanner } from "@yudiel/react-qr-scanner";
+import { useNavigate } from "react-router-dom";
 
 function Dashboard() {
   const [groupName, setGroupName] = useState("");
   const [groups, setGroups] = useState([]);
+  const [inviteCode, setInviteCode] = useState("");
+  const navigate = useNavigate();
+
+const [showScanner, setShowScanner] = useState(false);
 
   const fetchGroups = async () => {
     try {
@@ -51,6 +57,31 @@ function Dashboard() {
       alert(error.response?.data?.message || "Error creating group");
     }
   };
+  const joinGroup = async () => {
+  try {
+    const token = localStorage.getItem("token");
+
+    const res = await API.post(
+      "/groups/join-by-code",
+      {
+        inviteCode,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    alert(res.data.message);
+
+    setInviteCode("");
+
+    fetchGroups();
+  } catch (error) {
+    alert(error.response?.data?.message || "Error");
+  }
+};
 
   return (
     <>
@@ -90,6 +121,42 @@ function Dashboard() {
           </div>
 
         </div>
+        <div className="bg-slate-900 border border-slate-700 rounded-2xl p-6 shadow-lg mt-8">
+
+  <h2 className="text-2xl font-bold text-white mb-6">
+    🤝 Join Group
+  </h2>
+
+  <div className="flex flex-col md:flex-row gap-4">
+
+    <input
+      type="text"
+      placeholder="Enter Invite Code"
+      value={inviteCode}
+      onChange={(e) => setInviteCode(e.target.value)}
+      className="flex-1 bg-slate-800 border border-slate-600 rounded-lg px-4 py-3 text-white"
+    />
+
+    <button
+      onClick={joinGroup}
+      className="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg text-white font-semibold"
+    >
+      Join Group
+    </button>
+
+  </div>
+  <div className="mt-5">
+
+  <button
+    onClick={() => setShowScanner(true)}
+    className="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 rounded-lg font-semibold"
+  >
+    📷 Scan QR Code
+  </button>
+
+</div>
+
+</div>
 
         {/* Groups */}
 
@@ -146,6 +213,58 @@ function Dashboard() {
         </div>
 
       </div>
+      {showScanner && (
+  <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
+    <div className="bg-slate-900 p-6 rounded-2xl w-[90%] max-w-md">
+
+      <h2 className="text-2xl font-bold text-white text-center mb-4">
+        📷 Scan QR Code
+      </h2>
+
+      <Scanner
+  onScan={async (result) => {
+    if (!result || result.length === 0) return;
+
+    const url = result[0].rawValue;
+    const inviteCode = url.split("/").pop();
+
+    setShowScanner(false);
+
+    try {
+      const token = localStorage.getItem("token");
+
+      const res = await API.post(
+        "/groups/join-by-code",
+        {
+          inviteCode,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      alert(res.data.message);
+
+      navigate(`/group/${res.data.groupId}`);
+
+    } catch (error) {
+      alert(error.response?.data?.message || "Unable to join group");
+    }
+  }}
+/>
+
+      <button
+        onClick={() => setShowScanner(false)}
+        className="w-full mt-5 bg-red-600 hover:bg-red-700 text-white py-3 rounded-lg"
+      >
+        Cancel
+      </button>
+
+    </div>
+  </div>
+)}
     </>
   );
 }
