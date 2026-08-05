@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import API from "../services/api";
 import { QRCodeCanvas } from "qrcode.react";
 
 function GroupDetails() {
   const { id } = useParams();
+  const navigate = useNavigate();
 
   const [group, setGroup] = useState(null);
   const [expenses, setExpenses] = useState([]);
@@ -172,6 +173,61 @@ const updateExpense = async () => {
     alert(error.response?.data?.message || "Error");
   }
 };
+const leaveGroup = async () => {
+  const confirmLeave = window.confirm(
+    "Are you sure you want to leave this group?"
+  );
+
+  if (!confirmLeave) return;
+
+  try {
+    const token = localStorage.getItem("token");
+
+    const res = await API.post(
+      "/groups/leave",
+      {
+        groupId: id,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    alert(res.data.message);
+
+    navigate("/dashboard");
+  } catch (error) {
+    alert(error.response?.data?.message || "Error leaving group");
+  }
+};
+const deleteGroup = async () => {
+  const confirmDelete = window.confirm(
+    "Are you sure? This will permanently delete the group and all expenses."
+  );
+
+  if (!confirmDelete) return;
+
+  try {
+    const token = localStorage.getItem("token");
+
+    const res = await API.delete("/groups/delete", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data: {
+        groupId: id,
+      },
+    });
+
+    alert(res.data.message);
+
+    navigate("/dashboard");
+  } catch (error) {
+    alert(error.response?.data?.message || "Error deleting group");
+  }
+};
 const totalExpense = expenses.reduce((total, expense) => {
   return total + expense.amount;
 }, 0);
@@ -253,6 +309,24 @@ const totalExpense = expenses.reduce((total, expense) => {
     <h1 className="text-5xl font-bold text-white mb-6">
       {group.name}
     </h1>
+    <div className="flex justify-end mt-4">
+  {group.createdBy ===
+  JSON.parse(localStorage.getItem("user"))?.id ? (
+    <button
+      onClick={deleteGroup}
+      className="bg-red-700 hover:bg-red-800 text-white px-5 py-2 rounded-lg font-semibold"
+    >
+      🗑 Delete Group
+    </button>
+  ) : (
+    <button
+      onClick={leaveGroup}
+      className="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-lg font-semibold"
+    >
+      🚪 Leave Group
+    </button>
+  )}
+</div>
 
     <div className="flex justify-center gap-10 text-lg">
 
