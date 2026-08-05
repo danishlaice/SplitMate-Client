@@ -2,7 +2,7 @@ import Navbar from "../components/Navbar";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import API from "../services/api";
-import { Scanner } from "@yudiel/react-qr-scanner";
+import QrScanner from "../components/QrScanner";
 import { useNavigate } from "react-router-dom";
 
 function Dashboard() {
@@ -221,17 +221,14 @@ const [showScanner, setShowScanner] = useState(false);
         📷 Scan QR Code
       </h2>
 
-      <Scanner
-  onScan={async (result) => {
-    if (!result || result.length === 0) return;
-
-    const url = result[0].rawValue;
-    const inviteCode = url.split("/").pop();
-
+    <QrScanner
+  onScanSuccess={async (decodedText) => {
     setShowScanner(false);
 
     try {
       const token = localStorage.getItem("token");
+
+      const inviteCode = decodedText.split("/").pop();
 
       const res = await API.post(
         "/groups/join-by-code",
@@ -248,13 +245,11 @@ const [showScanner, setShowScanner] = useState(false);
       alert(res.data.message);
 
       navigate(`/group/${res.data.groupId}`);
-
     } catch (error) {
       alert(error.response?.data?.message || "Unable to join group");
     }
   }}
 />
-
       <button
         onClick={() => setShowScanner(false)}
         className="w-full mt-5 bg-red-600 hover:bg-red-700 text-white py-3 rounded-lg"
