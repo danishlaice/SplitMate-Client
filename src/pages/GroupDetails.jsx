@@ -310,8 +310,8 @@ const totalExpense = expenses.reduce((total, expense) => {
       {group.name}
     </h1>
     <div className="flex justify-end mt-4">
-  {group.createdBy ===
-  JSON.parse(localStorage.getItem("user"))?.id ? (
+  {group.createdBy?._id ===
+JSON.parse(localStorage.getItem("user"))?.id ? (
     <button
       onClick={deleteGroup}
       className="bg-red-700 hover:bg-red-800 text-white px-5 py-2 rounded-lg font-semibold"
