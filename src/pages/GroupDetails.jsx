@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import API from "../services/api";
 import { QRCodeCanvas } from "qrcode.react";
+import toast from "react-hot-toast";
 
 function GroupDetails() {
   const { id } = useParams();
@@ -17,7 +18,11 @@ function GroupDetails() {
   const [editingId, setEditingId] = useState(null);
 const [editDescription, setEditDescription] = useState("");
 const [editAmount, setEditAmount] = useState("");
-
+const [expenseLoading, setExpenseLoading] = useState(false);
+const [updateLoading, setUpdateLoading] = useState(false);
+const [deleteLoading, setDeleteLoading] = useState(null);
+const [leaveLoading, setLeaveLoading] = useState(false);
+const [deleteGroupLoading, setDeleteGroupLoading] = useState(false);
 useEffect(() => {
   fetchGroup();
   fetchExpenses();
@@ -99,35 +104,53 @@ const addMember = async () => {
 };
 
   const addExpense = async () => {
-    try {
-      const token = localStorage.getItem("token");
+  if (!description.trim() || !amount) {
+    toast.error("Please fill all fields");
+    return;
+  }
 
-      const res = await API.post(
-        "/expenses/add",
-        {
-          groupId: id,
-          description,
-          amount,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      alert(res.data.message);
-
-      setDescription("");
-      setAmount("");
-      fetchExpenses();
-      fetchBalance();
-    } catch (error) {
-      alert(error.response?.data?.message || "Error");
-    }
-  };
-  const deleteExpense = async (expenseId) => {
   try {
+    setExpenseLoading(true);
+
+    const token = localStorage.getItem("token");
+
+    const res = await API.post(
+      "/expenses/add",
+      {
+        groupId: id,
+        description,
+        amount,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    toast.success("Expense Added Successfully");
+
+    setDescription("");
+    setAmount("");
+
+    fetchExpenses();
+    fetchBalance();
+  } catch (error) {
+    toast.error(error.response?.data?.message || "Error");
+  } finally {
+    setExpenseLoading(false);
+  }
+};
+  const deleteExpense = async (expenseId) => {
+  const confirmDelete = window.confirm(
+    "Are you sure you want to delete this expense?"
+  );
+
+  if (!confirmDelete) return;
+
+  try {
+    setDeleteLoading(expenseId);
+
     const token = localStorage.getItem("token");
 
     const res = await API.delete(`/expenses/delete/${expenseId}`, {
@@ -136,16 +159,25 @@ const addMember = async () => {
       },
     });
 
-    alert(res.data.message);
+    toast.success("Expense Deleted Successfully");
 
     fetchExpenses();
     fetchBalance();
   } catch (error) {
-    alert(error.response?.data?.message || "Error");
+    toast.error(error.response?.data?.message || "Error");
+  } finally {
+    setDeleteLoading(null);
   }
 };
 const updateExpense = async () => {
+  if (!editDescription.trim() || !editAmount) {
+    toast.error("Please fill all fields");
+    return;
+  }
+
   try {
+    setUpdateLoading(true);
+
     const token = localStorage.getItem("token");
 
     const res = await API.put(
@@ -161,7 +193,7 @@ const updateExpense = async () => {
       }
     );
 
-    alert(res.data.message);
+    toast.success("Expense Updated Successfully");
 
     setEditingId(null);
     setEditDescription("");
@@ -170,7 +202,9 @@ const updateExpense = async () => {
     fetchExpenses();
     fetchBalance();
   } catch (error) {
-    alert(error.response?.data?.message || "Error");
+    toast.error(error.response?.data?.message || "Error");
+  } finally {
+    setUpdateLoading(false);
   }
 };
 const leaveGroup = async () => {
@@ -181,6 +215,8 @@ const leaveGroup = async () => {
   if (!confirmLeave) return;
 
   try {
+    setLeaveLoading(true);
+
     const token = localStorage.getItem("token");
 
     const res = await API.post(
@@ -195,11 +231,13 @@ const leaveGroup = async () => {
       }
     );
 
-    alert(res.data.message);
+    toast.success("Left Group Successfully");
 
     navigate("/dashboard");
   } catch (error) {
-    alert(error.response?.data?.message || "Error leaving group");
+    toast.error(error.response?.data?.message || "Error leaving group");
+  } finally {
+    setLeaveLoading(false);
   }
 };
 const deleteGroup = async () => {
@@ -210,6 +248,8 @@ const deleteGroup = async () => {
   if (!confirmDelete) return;
 
   try {
+    setDeleteGroupLoading(true);
+
     const token = localStorage.getItem("token");
 
     const res = await API.delete("/groups/delete", {
@@ -221,11 +261,13 @@ const deleteGroup = async () => {
       },
     });
 
-    alert(res.data.message);
+    toast.success("Group Deleted Successfully");
 
     navigate("/dashboard");
   } catch (error) {
-    alert(error.response?.data?.message || "Error deleting group");
+    toast.error(error.response?.data?.message || "Error deleting group");
+  } finally {
+    setDeleteGroupLoading(false);
   }
 };
 const totalExpense = expenses.reduce((total, expense) => {
@@ -313,18 +355,28 @@ const totalExpense = expenses.reduce((total, expense) => {
   {group.createdBy?._id ===
 JSON.parse(localStorage.getItem("user"))?.id ? (
     <button
-      onClick={deleteGroup}
-      className="bg-red-700 hover:bg-red-800 text-white px-5 py-2 rounded-lg font-semibold"
-    >
-      🗑 Delete Group
-    </button>
+  onClick={deleteGroup}
+  disabled={deleteGroupLoading}
+  className={`px-5 py-2 rounded-lg text-white font-semibold transition ${
+    deleteGroupLoading
+      ? "bg-red-400 cursor-not-allowed"
+      : "bg-red-700 hover:bg-red-800"
+  }`}
+>
+  {deleteGroupLoading ? "Deleting..." : "🗑 Delete Group"}
+</button>
   ) : (
     <button
-      onClick={leaveGroup}
-      className="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-lg font-semibold"
-    >
-      🚪 Leave Group
-    </button>
+  onClick={leaveGroup}
+  disabled={leaveLoading}
+  className={`px-5 py-2 rounded-lg text-white font-semibold transition ${
+    leaveLoading
+      ? "bg-red-400 cursor-not-allowed"
+      : "bg-red-600 hover:bg-red-700"
+  }`}
+>
+  {leaveLoading ? "Leaving..." : "🚪 Leave Group"}
+</button>
   )}
 </div>
 
@@ -515,11 +567,16 @@ JSON.parse(localStorage.getItem("user"))?.id ? (
   </div>
 
   <button
-    onClick={addExpense}
-    className="mt-6 w-full bg-green-600 hover:bg-green-700 py-3 rounded-lg text-white font-semibold transition"
-  >
-    Add Expense
-  </button>
+  onClick={addExpense}
+  disabled={expenseLoading}
+  className={`px-6 py-3 rounded-lg text-white font-semibold transition ${
+    expenseLoading
+      ? "bg-green-400 cursor-not-allowed"
+      : "bg-green-600 hover:bg-green-700"
+  }`}
+>
+  {expenseLoading ? "Adding..." : "Add Expense"}
+</button>
 
 </div>
         <hr />
@@ -574,12 +631,17 @@ JSON.parse(localStorage.getItem("user"))?.id ? (
 
               <div className="flex gap-3 mt-5">
 
-                <button
-                  onClick={updateExpense}
-                  className="bg-green-600 hover:bg-green-700 px-5 py-2 rounded-lg text-white"
-                >
-                  Save
-                </button>
+               <button
+  onClick={updateExpense}
+  disabled={updateLoading}
+  className={`px-5 py-2 rounded-lg text-white font-semibold transition ${
+    updateLoading
+      ? "bg-green-400 cursor-not-allowed"
+      : "bg-green-600 hover:bg-green-700"
+  }`}
+>
+  {updateLoading ? "Saving..." : "Save"}
+</button>
 
                 <button
                   onClick={() => setEditingId(null)}
@@ -625,11 +687,16 @@ JSON.parse(localStorage.getItem("user"))?.id ? (
                 </button>
 
                 <button
-                  onClick={() => deleteExpense(expense._id)}
-                  className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg text-white"
-                >
-                  Delete
-                </button>
+  onClick={() => deleteExpense(expense._id)}
+  disabled={deleteLoading === expense._id}
+  className={`px-4 py-2 rounded-lg text-white font-semibold transition ${
+    deleteLoading === expense._id
+      ? "bg-red-400 cursor-not-allowed"
+      : "bg-red-600 hover:bg-red-700"
+  }`}
+>
+  {deleteLoading === expense._id ? "Deleting..." : "Delete"}
+</button>
 
               </div>
 

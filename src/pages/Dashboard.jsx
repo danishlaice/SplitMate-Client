@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import API from "../services/api";
 import QrScanner from "../components/QrScanner";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 function Dashboard() {
   const [groupName, setGroupName] = useState("");
@@ -12,6 +13,7 @@ function Dashboard() {
   const navigate = useNavigate();
 
 const [showScanner, setShowScanner] = useState(false);
+const [loading, setLoading] = useState(false);
 
   const fetchGroups = async () => {
     try {
@@ -33,30 +35,40 @@ const [showScanner, setShowScanner] = useState(false);
     fetchGroups();
   }, []);
 
-  const createGroup = async () => {
-    try {
-      const token = localStorage.getItem("token");
+ const createGroup = async () => {
+  if (!groupName.trim()) {
+    toast.error("Please enter a group name");
+    return;
+  }
 
-      const res = await API.post(
-        "/groups/create",
-        {
-          name: groupName,
+  try {
+    setLoading(true);
+
+    const token = localStorage.getItem("token");
+
+    const res = await API.post(
+      "/groups/create",
+      {
+        name: groupName,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
         },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      }
+    );
 
-      alert(res.data.message);
+    toast.success("Group Created Successfully");
 
-      setGroupName("");
-      fetchGroups();
-    } catch (error) {
-      alert(error.response?.data?.message || "Error creating group");
-    }
-  };
+    setGroupName("");
+
+    navigate(`/group/${res.data.group._id}`);
+  } catch (error) {
+    toast.error(error.response?.data?.message || "Error creating group");
+  } finally {
+    setLoading(false);
+  }
+};
   const joinGroup = async () => {
   try {
     const token = localStorage.getItem("token");
@@ -112,11 +124,16 @@ const [showScanner, setShowScanner] = useState(false);
             />
 
             <button
-              onClick={createGroup}
-              className="bg-green-600 hover:bg-green-700 px-6 py-3 rounded-lg text-white font-semibold transition"
-            >
-              Create Group
-            </button>
+  onClick={createGroup}
+  disabled={loading}
+  className={`px-6 py-3 rounded-lg text-white font-semibold transition ${
+    loading
+      ? "bg-green-400 cursor-not-allowed"
+      : "bg-green-600 hover:bg-green-700"
+  }`}
+>
+  {loading ? "Creating..." : "Create Group"}
+</button>
 
           </div>
 

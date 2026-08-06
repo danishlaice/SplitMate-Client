@@ -1,39 +1,46 @@
 import { useParams, useNavigate } from "react-router-dom";
 import API from "../services/api";
+import toast from "react-hot-toast";
 
 function JoinGroup() {
   const { inviteCode } = useParams();
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
   const joinGroup = async () => {
-    try {
-      const token = localStorage.getItem("token");
+  try {
+    setLoading(true);
 
-      if (!token) {
-        alert("Please login first");
-        navigate("/");
-        return;
-      }
+    const token = localStorage.getItem("token");
 
-      const res = await API.post(
-        "/groups/join-by-code",
-        {
-          inviteCode,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      alert(res.data.message);
-
-      navigate("/dashboard");
-    } catch (error) {
-      alert(error.response?.data?.message || "Something went wrong");
+    if (!token) {
+      toast.error("Please login first");
+      navigate("/");
+      return;
     }
-  };
+
+    const res = await API.post(
+      "/groups/join-by-code",
+      {
+        inviteCode,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    toast.success("Joined Group Successfully");
+
+    navigate(`/group/${res.data.groupId}`);
+
+  } catch (error) {
+    toast.error(error.response?.data?.message || "Something went wrong");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-950">
@@ -51,11 +58,16 @@ function JoinGroup() {
         </p>
 
         <button
-          onClick={joinGroup}
-          className="mt-6 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg"
-        >
-          Join Group
-        </button>
+  onClick={joinGroup}
+  disabled={loading}
+  className={`mt-6 px-6 py-3 rounded-lg text-white font-semibold transition ${
+    loading
+      ? "bg-blue-400 cursor-not-allowed"
+      : "bg-blue-600 hover:bg-blue-700"
+  }`}
+>
+  {loading ? "Joining..." : "Join Group"}
+</button>
       </div>
     </div>
   );
