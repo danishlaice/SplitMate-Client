@@ -92,15 +92,15 @@ const addMember = async () => {
       }
     );
 
-    alert(res.data.message);
+    toast.success(res.data.message);
 
-    setMemberEmail("");
+setMemberEmail("");
 
-    fetchGroup();
-    fetchBalance();
-  } catch (error) {
-    alert(error.response?.data?.message || "Error");
-  }
+fetchGroup();
+fetchBalance();
+} catch (error) {
+  toast.error(error.response?.data?.message || "Error");
+}
 };
 
   const addExpense = async () => {
@@ -319,7 +319,7 @@ const totalExpense = expenses.reduce((total, expense) => {
   <button
     onClick={() => {
       navigator.clipboard.writeText(group.inviteCode);
-      alert("Invite Code Copied!");
+      toast.success("Invite Code Copied!");
     }}
     className="bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl"
   >
@@ -331,7 +331,7 @@ const totalExpense = expenses.reduce((total, expense) => {
       navigator.clipboard.writeText(
         `https://split-mate-client-one.vercel.app/join/${group.inviteCode}`
       );
-      alert("Invite Link Copied!");
+      toast.success("Invite Link Copied!");
     }}
     className="bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl"
   >

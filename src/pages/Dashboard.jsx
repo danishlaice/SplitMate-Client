@@ -85,14 +85,14 @@ const [loading, setLoading] = useState(false);
       }
     );
 
-    alert(res.data.message);
+   toast.success(res.data.message);
 
-    setInviteCode("");
+setInviteCode("");
 
-    fetchGroups();
-  } catch (error) {
-    alert(error.response?.data?.message || "Error");
-  }
+fetchGroups();
+} catch (error) {
+  toast.error(error.response?.data?.message || "Error");
+}
 };
 
   return (
@@ -259,12 +259,12 @@ const [loading, setLoading] = useState(false);
         }
       );
 
-      alert(res.data.message);
+     toast.success(res.data.message);
 
-      navigate(`/group/${res.data.groupId}`);
-    } catch (error) {
-      alert(error.response?.data?.message || "Unable to join group");
-    }
+navigate(`/group/${res.data.groupId}`);
+} catch (error) {
+  toast.error(error.response?.data?.message || "Unable to join group");
+}
   }}
 />
       <button
