@@ -1,9 +1,14 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import API from "../services/api";
-import { FaEye, FaEyeSlash , FaEnvelope ,FaLock } from "react-icons/fa";
+import {
+  FaEye,
+  FaEyeSlash,
+  FaEnvelope,
+  FaLock,
+  FaUsers,
+} from "react-icons/fa";
 import toast from "react-hot-toast";
-
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -38,94 +43,135 @@ function Login() {
   };
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-slate-950 flex items-center justify-center px-4">
+    <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-[#faf9ff] via-white to-[#f1f3ff] flex items-center justify-center px-4">
 
       {/* Background Glow */}
-      <div className="absolute -top-52 -left-52 w-[420px] h-[420px] bg-blue-800/10 rounded-full blur-3xl"></div>
+      <div className="absolute -top-52 -left-52 w-[420px] h-[420px] bg-violet-300/20 rounded-full blur-3xl"></div>
 
-<div className="absolute -bottom-52 -right-52 w-[420px] h-[420px] bg-cyan-500/10 rounded-full blur-3xl"></div>
+      <div className="absolute -bottom-52 -right-52 w-[420px] h-[420px] bg-blue-300/20 rounded-full blur-3xl"></div>
 
+      {/* Top Left Dot Pattern */}
+      <div
+        className="absolute top-6 left-5 w-20 h-36 opacity-60"
+        style={{
+          backgroundImage:
+            "radial-gradient(circle, #8b7cf6 3px, transparent 4px)",
+          backgroundSize: "24px 24px",
+        }}
+      ></div>
 
+      {/* Bottom Right Dot Pattern */}
+      <div
+        className="absolute bottom-5 right-5 w-20 h-36 opacity-50"
+        style={{
+          backgroundImage:
+            "radial-gradient(circle, #8b7cf6 3px, transparent 4px)",
+          backgroundSize: "24px 24px",
+        }}
+      ></div>
 
       {/* Login Card */}
-      <div className="relative z-10 w-full max-w-md rounded-3xl border border-slate-700/60 bg-slate-900/90 backdrop-blur-xl shadow-2xl p-8">
+      <div className="relative z-10 w-full max-w-sm rounded-3xl border border-white bg-white/95 backdrop-blur-xl shadow-[0_20px_60px_rgba(79,70,229,0.15)] p-7 sm:p-8">
 
-        <div className="text-center mb-8">
+        {/* Logo */}
+        <div className="text-center mb-7">
 
-  <div className="flex items-center justify-center gap-3">
+          <div className="flex items-center justify-center gap-2.5">
 
-   <div className="text-center">
+            {/* Logo Icon - Smaller */}
+            <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-gradient-to-br from-violet-600 to-blue-500 flex items-center justify-center shadow-lg shadow-violet-500/25">
+              <FaUsers className="text-white text-2xl sm:text-3xl" />
+            </div>
 
-  <h1 className="text-5xl font-light tracking-tight text-blue-400">
-  Split<span className="font-semibold text-sky-500">Mate</span>
-</h1>
+            {/* Logo Text - Smaller */}
+            <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight text-[#111a3a]">
+              Split
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-blue-500">
+                Mate
+              </span>
+            </h1>
 
-  <p className="mt-3 text-slate-400 text-sm font-light tracking-wide">
-  Split expenses with friends effortlessly.
-</p>
+          </div>
 
-</div>
+          {/* Tagline */}
+          <p className="mt-4 text-[#69779d] text-sm font-medium">
+            Split expenses with friends effortlessly.
+          </p>
 
-  </div>
+        </div>
 
-</div>
+        {/* Form */}
+        <form onSubmit={handleLogin} className="space-y-4">
 
-        <form onSubmit={handleLogin} className="space-y-5">
-
+          {/* Email */}
           <div>
-  <label className="block text-slate-300 mb-2">
-    Email
-  </label>
 
-  <div className="relative">
-    <FaEnvelope className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" />
+            <label className="block text-[#111a3a] mb-2 font-semibold">
+              Email
+            </label>
 
-    <input
-      type="email"
-      placeholder="Enter your email"
-      value={email}
-      onChange={(e) => setEmail(e.target.value)}
-      className="w-full bg-slate-800/80 border border-slate-600 rounded-xl px-4 py-3 pl-11 text-white placeholder-slate-400 outline-none transition-all duration-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
-    />
-  </div>
-</div>
+            <div className="relative">
 
+              <FaEnvelope
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-violet-600"
+              />
+
+              <input
+                type="email"
+                placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full bg-white border-2 border-[#e5e0ff] rounded-xl px-4 py-3 pl-11 text-[#111a3a] placeholder-[#8792b2] outline-none transition-all duration-300 focus:border-violet-500 focus:ring-2 focus:ring-violet-500/10"
+              />
+
+            </div>
+
+          </div>
+
+          {/* Password */}
           <div>
-  <label className="block text-slate-300 mb-2">
-    Password
-  </label>
 
-  <div className="relative">
+            <label className="block text-[#111a3a] mb-2 font-semibold">
+              Password
+            </label>
 
-    <FaLock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" />
+            <div className="relative">
 
-    <input
-      type={showPassword ? "text" : "password"}
-      placeholder="Enter your password"
-      value={password}
-      onChange={(e) => setPassword(e.target.value)}
-      className="w-full bg-slate-800/80 border border-slate-600 rounded-xl px-4 py-3 pl-11 pr-12 text-white placeholder-slate-400 outline-none transition-all duration-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
-    />
+              <FaLock
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-violet-600"
+              />
 
-    <button
-      type="button"
-      onClick={() => setShowPassword(!showPassword)}
-      aria-label={showPassword ? "Hide password" : "Show password"}
-      className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-200 transition-colors"
-    >
-      {showPassword ? <FaEyeSlash /> : <FaEye />}
-    </button>
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full bg-white border-2 border-[#e5e0ff] rounded-xl px-4 py-3 pl-11 pr-12 text-[#111a3a] placeholder-[#8792b2] outline-none transition-all duration-300 focus:border-violet-500 focus:ring-2 focus:ring-violet-500/10"
+              />
 
-  </div>
-</div>
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                aria-label={
+                  showPassword ? "Hide password" : "Show password"
+                }
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-[#8b96b5] hover:text-violet-600 transition-colors"
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </button>
 
+            </div>
+
+          </div>
+
+          {/* Login Button */}
           <button
             type="submit"
             disabled={loading}
             className={`w-full py-3 rounded-xl text-white font-semibold transition-all duration-300 ${
               loading
-                ? "bg-blue-400 cursor-not-allowed"
-                : "bg-blue-600 hover:bg-blue-700 hover:scale-[1.02]"
+                ? "bg-violet-400 cursor-not-allowed"
+                : "bg-gradient-to-r from-violet-600 to-blue-500 hover:from-violet-700 hover:to-blue-600 hover:scale-[1.02] shadow-lg shadow-violet-500/20"
             }`}
           >
             {loading ? "Logging in..." : "Login"}
@@ -133,14 +179,18 @@ function Login() {
 
         </form>
 
-        <p className="text-center text-slate-400 mt-6">
+        {/* Register */}
+        <p className="text-center text-[#69779d] mt-5">
+
           Don't have an account?{" "}
+
           <Link
             to="/register"
-            className="text-blue-400 hover:text-cyan-300 font-semibold transition"
+            className="text-violet-600 hover:text-blue-600 font-semibold transition"
           >
             Register
           </Link>
+
         </p>
 
       </div>
