@@ -145,6 +145,17 @@ const handleLeaveGroup = async () => {
 
   fetchGroups();
 }, []);
+useEffect(() => {
+  const handleOutsideClick = () => {
+    setOpenMenu(null);
+  };
+
+  document.addEventListener("click", handleOutsideClick);
+
+  return () => {
+    document.removeEventListener("click", handleOutsideClick);
+  };
+}, []);
 
   // =========================
   // Create Group
@@ -503,7 +514,10 @@ const handleLeaveGroup = async () => {
 }`}>
   {/* Three Dot Menu */}
 
-<div className="absolute right-4 top-4 z-50">
+<div
+  className="absolute right-4 top-4 z-50"
+  onClick={(e) => e.stopPropagation()}
+>
 
   <button
     onClick={() =>
