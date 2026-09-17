@@ -12,6 +12,8 @@ import {
   FaArrowRight,
   FaEllipsisV,
   FaTimes,
+  FaSearch,
+FaCalendarAlt,
 } from "react-icons/fa";
 
 function Dashboard() {
@@ -24,6 +26,8 @@ function Dashboard() {
   const [openMenu, setOpenMenu] = useState(null);
 
 const [currentUserId, setCurrentUserId] = useState(null);
+
+const [searchQuery, setSearchQuery] = useState("");
 
   const [renameGroupId, setRenameGroupId] = useState(null);
 const [renameName, setRenameName] = useState("");
@@ -250,12 +254,15 @@ useEffect(() => {
       current === panel ? null : panel
     );
   };
+  const filteredGroups = groups.filter((group) =>
+  group.name.toLowerCase().includes(searchQuery.toLowerCase())
+);
 
   return (
     <>
       <Navbar />
 
-     <main className="relative min-h-screen bg-slate-50 px-4 py-8 sm:px-6 lg:px-8">
+     <main className="relative min-h-screen bg-slate-50 px-3 py-5 sm:px-6 sm:py-8 lg:px-8">
         {/* Background Glow */}
 
        
@@ -265,12 +272,12 @@ useEffect(() => {
               Action Buttons
           ========================= */}
 
-         <div className="flex flex-col gap-3 sm:flex-row">
+         <div className="flex gap-2 sm:gap-3">
 
   {/* Create Group */}
   <button
     onClick={() => handlePanel("create")}
-    className={`flex items-center justify-center gap-2 rounded-xl px-6 py-3 font-semibold transition-all duration-300 ${
+    className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg border px-3 py-2.5 text-sm font-semibold transition-all duration-300 sm:flex-none sm:gap-2 sm:rounded-xl sm:px-6 sm:py-3 sm:text-base ${
       activePanel === "create"
         ? "bg-violet-700 text-white shadow-md shadow-violet-200"
         : "bg-violet-600 text-white shadow-sm hover:bg-violet-700 hover:-translate-y-0.5"
@@ -283,7 +290,7 @@ useEffect(() => {
   {/* Join Group */}
   <button
     onClick={() => handlePanel("join")}
-    className={`flex items-center justify-center gap-2 rounded-xl border px-6 py-3 font-semibold transition-all duration-300 ${
+    className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg border px-3 py-2.5 text-sm font-semibold transition-all duration-300 sm:flex-none sm:gap-2 sm:rounded-xl sm:px-6 sm:py-3 sm:text-base ${
       activePanel === "join"
         ? "border-emerald-300 bg-emerald-50 text-emerald-600"
         : "border-slate-200 bg-white text-slate-700 shadow-sm hover:border-emerald-300 hover:bg-emerald-50 hover:text-emerald-600"
@@ -358,46 +365,50 @@ useEffect(() => {
   </div>
 )}
 
-         {/* =========================
+ {/* =========================
     Join Group Panel
 ========================= */}
 
 {activePanel === "join" && (
   <div className="mt-5 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
 
-    <div className="mb-5 flex items-start justify-between gap-4">
+    {/* Header */}
+    <div className="mb-6 flex items-start justify-between gap-4">
 
       <div className="flex items-center gap-3">
 
-        <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
-          <FaUserFriends />
+        {/* Icon */}
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
+          <FaUserFriends className="text-lg" />
         </div>
 
+        {/* Title */}
         <div>
-          <h2 className="text-lg font-semibold text-slate-900">
+          <h2 className="text-lg font-bold text-slate-900">
             Join a Group
           </h2>
 
-          <p className="text-sm text-slate-500">
+          <p className="mt-0.5 text-sm text-slate-500">
             Enter an invite code or scan a QR code.
           </p>
         </div>
 
       </div>
 
+      {/* Close */}
       <button
         onClick={() => setActivePanel(null)}
-        className="text-slate-400 transition hover:text-slate-700"
+        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
       >
-        <FaTimes />
+        <FaTimes className="text-sm" />
       </button>
 
     </div>
 
-    {/* Invite Code */}
+    {/* Invite Code + QR Scanner */}
+    <div className="flex items-center gap-2.5">
 
-    <div className="flex flex-col gap-3 sm:flex-row">
-
+      {/* Invite Code */}
       <input
         type="text"
         placeholder="Enter invite code"
@@ -405,45 +416,31 @@ useEffect(() => {
         onChange={(e) =>
           setInviteCode(e.target.value.toUpperCase())
         }
-        className="flex-1 rounded-xl border border-slate-200 bg-white px-4 py-3 uppercase tracking-wider text-slate-800 placeholder-slate-400 placeholder:normal-case placeholder:tracking-normal outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
+        className="min-w-0 flex-1 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm uppercase tracking-wider text-slate-800 outline-none transition placeholder:normal-case placeholder:tracking-normal placeholder:text-slate-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
       />
 
+      {/* QR Scanner */}
       <button
-        onClick={joinGroup}
-        disabled={joinLoading}
-        className={`rounded-xl px-6 py-3 font-semibold text-white transition ${
-          joinLoading
-            ? "cursor-not-allowed bg-emerald-400"
-            : "bg-emerald-600 hover:bg-emerald-700"
-        }`}
+        onClick={() => setShowScanner(true)}
+        className="flex h-[46px] w-[52px] shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 transition hover:border-emerald-300 hover:bg-emerald-50 hover:text-emerald-600"
+        title="Scan QR Code"
       >
-        {joinLoading ? "Joining..." : "Join Group"}
+        <FaQrcode className="text-lg" />
       </button>
 
     </div>
 
-    {/* OR */}
-
-    <div className="my-5 flex items-center gap-3">
-
-      <div className="h-px flex-1 bg-slate-200" />
-
-      <span className="text-xs font-medium uppercase tracking-wide text-slate-400">
-        Or
-      </span>
-
-      <div className="h-px flex-1 bg-slate-200" />
-
-    </div>
-
-    {/* QR Button */}
-
+    {/* Join Group Button */}
     <button
-      onClick={() => setShowScanner(true)}
-      className="flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white py-3 font-semibold text-slate-600 transition hover:border-violet-300 hover:bg-violet-50 hover:text-violet-600"
+      onClick={joinGroup}
+      disabled={joinLoading}
+      className={`mt-3 w-full rounded-xl py-3 text-sm font-semibold text-white transition ${
+        joinLoading
+          ? "cursor-not-allowed bg-emerald-400"
+          : "bg-emerald-600 hover:bg-emerald-700"
+      }`}
     >
-      <FaQrcode />
-      Scan QR Code
+      {joinLoading ? "Joining..." : "Join Group"}
     </button>
 
   </div>
@@ -457,32 +454,57 @@ useEffect(() => {
     My Groups
 ========================= */}
 
-<section className="mt-12">
+<section className="mt-10 sm:mt-12">
 
-  <div className="mb-6 flex items-center justify-between">
+  {/* Header */}
+  <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
 
-    <div>
-      <h2 className="text-2xl font-bold text-slate-900">
-        My Groups
-      </h2>
+    <div className="flex items-center justify-between sm:block">
+      <div>
+        <h2 className="text-xl font-bold text-slate-900 sm:text-2xl">
+          My Groups
+        </h2>
 
-      <p className="mt-1 text-sm text-slate-500">
-        Your groups and shared expenses.
-      </p>
+        <p className="mt-1 hidden text-sm text-slate-500 sm:block">
+          Your groups and shared expenses.
+        </p>
+      </div>
+
+      {/* Mobile group count */}
+      <span className="rounded-full border border-slate-200 bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-500 sm:hidden">
+        {groups.length} {groups.length === 1 ? "Group" : "Groups"}
+      </span>
     </div>
 
-    <span className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-600 shadow-sm">
-      {groups.length}{" "}
-      {groups.length === 1 ? "Group" : "Groups"}
-    </span>
+    {/* Search + Count */}
+    <div className="flex items-center gap-2">
 
+      {/* Search */}
+      <div className="relative flex-1 sm:w-64 sm:flex-none">
+        <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-slate-400" />
+
+        <input
+          type="text"
+          placeholder="Search groups..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="w-full rounded-xl border border-slate-200 bg-white py-2.5 pl-9 pr-3 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-violet-400 focus:ring-2 focus:ring-violet-500/10"
+        />
+      </div>
+
+      {/* Desktop group count */}
+      <span className="hidden whitespace-nowrap rounded-full border border-slate-200 bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-500 sm:block">
+        {groups.length} {groups.length === 1 ? "Group" : "Groups"}
+      </span>
+
+    </div>
   </div>
 
-  {/* No Groups */}
 
+  {/* No Groups */}
   {groups.length === 0 ? (
 
-    <div className="rounded-2xl border border-slate-200 bg-white p-10 text-center shadow-sm">
+    <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-sm sm:p-10">
 
       <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-violet-50 text-xl text-violet-600">
         <FaUsers />
@@ -499,165 +521,186 @@ useEffect(() => {
 
     </div>
 
+  ) : filteredGroups.length === 0 ? (
+
+    /* No Search Results */
+    <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-sm">
+      <h3 className="text-base font-semibold text-slate-900">
+        No groups found
+      </h3>
+
+      <p className="mt-1 text-sm text-slate-500">
+        Try searching with a different group name.
+      </p>
+    </div>
+
   ) : (
 
     /* Group Cards */
+    <div className="flex flex-col gap-3">
 
-    <div className="flex flex-col gap-4">
-
-      {groups.map((group) => (
+      {filteredGroups.map((group) => (
 
         <div
-  key={group._id}
- className={`group relative rounded-2xl border border-slate-200 bg-white px-6 py-5 pr-16 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md ${
-  openMenu === group._id ? "z-50" : "z-10"
-}`}>
-  {/* Three Dot Menu */}
+          key={group._id}
+          className={`group relative rounded-xl border border-slate-200 bg-white px-3.5 py-3.5 shadow-sm transition-all duration-300 hover:border-violet-200 hover:shadow-md sm:rounded-2xl sm:px-5 sm:py-4 ${
+            openMenu === group._id ? "z-50" : "z-10"
+          }`}
+        >
 
-<div
-  className="absolute right-4 top-4 z-50"
-  onClick={(e) => e.stopPropagation()}
->
+          {/* Three Dot Menu */}
+          <div
+            className="absolute right-2.5 top-2.5 z-50 sm:right-3 sm:top-3"
+            onClick={(e) => e.stopPropagation()}
+          >
 
-  <button
-    onClick={() =>
-      setOpenMenu(
-        openMenu === group._id ? null : group._id
-      )
-    }
-    className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
-  >
-    <FaEllipsisV className="text-sm" />
-  </button>
+            <button
+              onClick={() =>
+                setOpenMenu(
+                  openMenu === group._id ? null : group._id
+                )
+              }
+              className="flex h-7 w-7 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
+            >
+              <FaEllipsisV className="text-xs" />
+            </button>
 
-  {openMenu === group._id && (
-    <div className="absolute right-0 top-10 z-[60] w-48 rounded-xl border border-slate-200 bg-white p-1.5 shadow-lg">
+            {openMenu === group._id && (
+              <div className="absolute right-0 top-9 z-[60] w-48 rounded-xl border border-slate-200 bg-white p-1.5 shadow-lg">
 
-     {String(group.createdBy) === String(currentUserId) && (
-  <button
-    onClick={() => {
-      setOpenMenu(null);
-      setRenameGroupId(group._id);
-      setRenameName(group.name);
-    }}
-    className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-slate-700 hover:bg-slate-50"
-  >
-    ✏️ Rename
-  </button>
-)}
+                {/* Rename */}
+                {String(group.createdBy) === String(currentUserId) && (
+                  <button
+                    onClick={() => {
+                      setOpenMenu(null);
+                      setRenameGroupId(group._id);
+                      setRenameName(group.name);
+                    }}
+                    className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-slate-700 hover:bg-slate-50"
+                  >
+                    <span>✏️</span>
+                    Rename
+                  </button>
+                )}
 
-      <button
-  onClick={async () => {
-    try {
-      await navigator.clipboard.writeText(group.inviteCode);
+                {/* Copy Invite */}
+                <button
+                  onClick={async () => {
+                    try {
+                      await navigator.clipboard.writeText(
+                        group.inviteCode
+                      );
 
-      setOpenMenu(null);
+                      setOpenMenu(null);
+                      toast.success("Invite code copied");
+                    } catch (error) {
+                      toast.error("Unable to copy invite code");
+                    }
+                  }}
+                  className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-slate-700 hover:bg-slate-50"
+                >
+                  <span>🔗</span>
+                  Copy Invite Code
+                </button>
 
-      toast.success("Invite code copied");
-    } catch (error) {
-      toast.error("Unable to copy invite code");
-    }
-  }}
-  className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-slate-700 hover:bg-slate-50"
->
-  <span>🔗</span>
-  Copy Invite Code
-</button>
+                <div className="my-1 border-t border-slate-100" />
 
-      
+                {/* Delete / Leave */}
+                {String(group.createdBy) === String(currentUserId) ? (
+                  <button
+                    onClick={() => {
+                      setOpenMenu(null);
+                      setDeleteGroupId(group._id);
+                      setDeleteGroupName(group.name);
+                    }}
+                    className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-red-600 transition hover:bg-red-50"
+                  >
+                    <span>🗑️</span>
+                    Delete Group
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => {
+                      setOpenMenu(null);
+                      setLeaveGroupId(group._id);
+                      setLeaveGroupName(group.name);
+                    }}
+                    className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-red-600 transition hover:bg-red-50"
+                  >
+                    <span>🚪</span>
+                    Leave Group
+                  </button>
+                )}
 
-      <div className="my-1 border-t border-slate-100" />
+              </div>
+            )}
 
-     {String(group.createdBy) === String(currentUserId) ? (
-  <button
-    onClick={() => {
-      setOpenMenu(null);
-      setDeleteGroupId(group._id);
-      setDeleteGroupName(group.name);
-    }}
-    className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-red-600 transition hover:bg-red-50"
-  >
-    <span>🗑️</span>
-    Delete Group
-  </button>
-) : (
-  <button
-    onClick={() => {
-      setOpenMenu(null);
-      setLeaveGroupId(group._id);
-      setLeaveGroupName(group.name);
-    }}
-    className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-red-600 transition hover:bg-red-50"
-  >
-    <span>🚪</span>
-    Leave Group
-  </button>
-)}
+          </div>
 
-    </div>
-  )}
 
-</div>
+          {/* Group Content */}
+          <div className="pr-8">
 
-  <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+            {/* Group Name */}
+            <h3 className="truncate text-base font-bold text-slate-900 sm:text-lg">
+              {group.name.charAt(0).toUpperCase() + group.name.slice(1)}
+            </h3>
 
-    {/* Group Info */}
 
-    <div className="min-w-0 flex-1 pr-10">
+            {/* Members + Created */}
+            <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs font-medium text-slate-500 sm:text-sm">
 
-      <h3 className="truncate text-xl font-bold text-slate-900">
-        {group.name}
-      </h3>
+              
 
-      <div className="mt-2 flex flex-wrap items-center gap-2 text-sm font-medium text-slate-500">
+              
 
-        <span className="flex items-center gap-2">
-          <FaUsers className="text-slate-400" />
-          {group.members.length} Members
-        </span>
+              <span className="flex items-center gap-1.5">
+                <FaCalendarAlt className="text-slate-400" />
 
-        <span className="text-slate-300">•</span>
+                Created on{" "}
+                {new Date(group.createdAt).toLocaleDateString("en-GB", {
+                  day: "2-digit",
+                  month: "short",
+                  year: "numeric",
+                })}
+              </span>
 
-        <span>
-          Created on{" "}
-          {new Date(group.createdAt).toLocaleDateString("en-GB", {
-            day: "2-digit",
-            month: "short",
-            year: "numeric",
-          })}
-        </span>
+            </div>
 
-      </div>
 
-    </div>
+            {/* Divider */}
+            <div className="my-2.5 border-t border-slate-100 sm:my-3" />
 
-    {/* Total Spent */}
 
-    <div className="lg:min-w-[150px]">
+            {/* Bottom Row */}
+            <div className="flex items-center justify-between gap-3">
 
-      <p className="text-sm text-slate-500">
-        Total Spent
-      </p>
+              {/* Total Spent */}
+              <div>
+                <p className="text-xs text-slate-500 sm:text-sm">
+                  Total Spent
+                </p>
 
-      <p className="mt-1 text-2xl font-bold text-violet-600">
-        ₹0
-      </p>
+                <p className="mt-0.5 text-xl font-bold text-violet-600 sm:text-2xl">
+                  ₹0
+                </p>
+              </div>
 
-    </div>
 
-    {/* Open Group */}
+              {/* Open Group */}
+              <Link
+                to={`/group/${group._id}`}
+                className="flex shrink-0 items-center justify-center gap-2 rounded-lg border border-violet-200 bg-violet-50 px-4 py-2.5 text-sm font-semibold text-violet-600 transition-all duration-300 hover:border-violet-300 hover:bg-violet-100 sm:rounded-xl sm:px-6 sm:py-3"
+              >
+                Open Group
+                <FaArrowRight className="text-xs sm:text-sm" />
+              </Link>
 
-    <Link
-      to={`/group/${group._id}`}
-      className="flex items-center justify-center gap-2 rounded-xl border border-violet-200 bg-violet-50 px-6 py-3 font-semibold text-violet-600 transition-all duration-300 hover:border-violet-300 hover:bg-violet-100"
-    >
-      Open Group
-      <FaArrowRight className="text-sm transition-transform duration-300 group-hover:translate-x-1" />
-    </Link>
+            </div>
 
-  </div>
+          </div>
 
-</div>
+        </div>
 
       ))}
 

@@ -66,18 +66,18 @@ function Register() {
 
           <div className="flex items-center justify-center gap-2">
 
-            {/* Logo Icon */}
-            <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-violet-600 to-blue-500 flex items-center justify-center shadow-lg shadow-violet-500/25 shrink-0">
-              <FaUsers className="text-white text-2xl" />
-            </div>
+            
 
             {/* Logo Text */}
-            <h1 className="text-[38px] leading-none font-semibold tracking-tight text-[#111a3a]">
-              Split
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-blue-500">
-                Mate
-              </span>
-            </h1>
+            <h1
+  className="text-[38px] leading-none font-semibold tracking-tight text-[#111a3a]"
+  style={{ fontFamily: "Comfortaa, sans-serif" }}
+>
+  Split
+  <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-blue-500">
+    Mate
+  </span>
+</h1>
 
           </div>
 
