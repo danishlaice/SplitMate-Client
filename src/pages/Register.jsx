@@ -26,13 +26,22 @@ function Register() {
   const handleRegister = async (e) => {
     e.preventDefault();
 
+    const cleanName = name.trim();
+    const cleanEmail = email.trim().toLowerCase();
+    const cleanPassword = password.trim();
+
+    if (!cleanName || !cleanEmail || !cleanPassword) {
+      toast.error("Please fill all fields");
+      return;
+    }
+
     try {
       setLoading(true);
 
       const res = await API.post("/users/register", {
-        name,
-        email,
-        password,
+        name: cleanName,
+        email: cleanEmail,
+        password: cleanPassword,
       });
 
       localStorage.setItem("token", res.data.token);
@@ -42,9 +51,12 @@ function Register() {
 
       navigate("/dashboard");
     } catch (error) {
-      toast.error(
-        error.response?.data?.message || "Registration Failed"
-      );
+      const message =
+        error.response?.data?.message ||
+        (error.message === "Network Error"
+          ? "Unable to connect to server. Please check your internet connection."
+          : error.message || "Registration Failed");
+      toast.error(message);
     } finally {
       setLoading(false);
     }
@@ -109,6 +121,10 @@ function Register() {
                 placeholder="Enter your name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
+                autoComplete="name"
+                autoCapitalize="words"
+                spellCheck="false"
+                required
                 className="w-full h-12 bg-white border-2 border-[#e5e0ff] rounded-xl px-4 pl-11 text-[#111a3a] placeholder-[#8792b2] outline-none transition-all duration-300 focus:border-violet-500 focus:ring-2 focus:ring-violet-500/10"
               />
 
@@ -134,6 +150,11 @@ function Register() {
                 placeholder="Enter your email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                autoComplete="email"
+                autoCapitalize="none"
+                autoCorrect="off"
+                spellCheck="false"
+                required
                 className="w-full h-12 bg-white border-2 border-[#e5e0ff] rounded-xl px-4 pl-11 text-[#111a3a] placeholder-[#8792b2] outline-none transition-all duration-300 focus:border-violet-500 focus:ring-2 focus:ring-violet-500/10"
               />
 
@@ -159,6 +180,11 @@ function Register() {
                 placeholder="Enter your password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                autoComplete="new-password"
+                autoCapitalize="none"
+                autoCorrect="off"
+                spellCheck="false"
+                required
                 className="w-full h-12 bg-white border-2 border-[#e5e0ff] rounded-xl px-4 pl-11 pr-12 text-[#111a3a] placeholder-[#8792b2] outline-none transition-all duration-300 focus:border-violet-500 focus:ring-2 focus:ring-violet-500/10"
               />
 

@@ -25,12 +25,20 @@ function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
 
+    const cleanEmail = email.trim().toLowerCase();
+    const cleanPassword = password.trim();
+
+    if (!cleanEmail || !cleanPassword) {
+      toast.error("Please enter email and password");
+      return;
+    }
+
     try {
       setLoading(true);
 
       const res = await API.post("/users/login", {
-        email,
-        password,
+        email: cleanEmail,
+        password: cleanPassword,
       });
 
       localStorage.setItem("token", res.data.token);
@@ -40,7 +48,12 @@ function Login() {
 
       navigate("/dashboard");
     } catch (error) {
-      toast.error(error.response?.data?.message || "Login Failed");
+      const message =
+        error.response?.data?.message ||
+        (error.message === "Network Error"
+          ? "Unable to connect to server. Please check your internet connection."
+          : error.message || "Login Failed");
+      toast.error(message);
     } finally {
       setLoading(false);
     }
@@ -107,6 +120,11 @@ function Login() {
                 placeholder="Enter your email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                autoComplete="email"
+                autoCapitalize="none"
+                autoCorrect="off"
+                spellCheck="false"
+                required
                 className="w-full h-12 bg-white border-2 border-[#e5e0ff] rounded-xl px-4 pl-11 text-[#111a3a] placeholder-[#8792b2] outline-none transition-all duration-300 focus:border-violet-500 focus:ring-2 focus:ring-violet-500/10"
               />
 
@@ -132,6 +150,11 @@ function Login() {
                 placeholder="Enter your password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                autoComplete="current-password"
+                autoCapitalize="none"
+                autoCorrect="off"
+                spellCheck="false"
+                required
                 className="w-full h-12 bg-white border-2 border-[#e5e0ff] rounded-xl px-4 pl-11 pr-12 text-[#111a3a] placeholder-[#8792b2] outline-none transition-all duration-300 focus:border-violet-500 focus:ring-2 focus:ring-violet-500/10"
               />
 
