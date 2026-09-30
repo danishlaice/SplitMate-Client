@@ -567,7 +567,7 @@ function GroupDetails() {
       <Navbar />
 
       <div className="min-h-screen bg-slate-50">
-        <div className="mx-auto max-w-6xl px-3 py-3 sm:px-6 sm:py-6">
+        <div className="mx-auto max-w-6xl px-3 pt-3 pb-24 sm:px-6 sm:py-6">
 
 
 

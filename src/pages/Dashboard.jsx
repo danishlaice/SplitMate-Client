@@ -14,7 +14,6 @@ import {
   FaTimes,
   FaSearch,
   FaCalendarAlt,
-  FaWallet,
 } from "react-icons/fa";
 
 function Dashboard() {
@@ -264,7 +263,7 @@ const handleLeaveGroup = async () => {
     <>
       <Navbar />
 
-     <main className="relative min-h-screen bg-slate-50 px-3 py-5 sm:px-6 sm:py-8 lg:px-8">
+     <main className="relative min-h-screen bg-slate-50 px-3 pt-5 pb-24 sm:px-6 sm:py-8 lg:px-8">
         {/* Background Glow */}
 
        
@@ -274,7 +273,7 @@ const handleLeaveGroup = async () => {
               Action Buttons
           ========================= */}
 
-         <div className="flex flex-wrap gap-2 sm:gap-3">
+         <div className="flex gap-2 sm:gap-3">
 
   {/* Create Group */}
   <button
@@ -301,15 +300,6 @@ const handleLeaveGroup = async () => {
     <FaUserFriends />
     Join Group
   </button>
-
-  {/* Personal Expenses Page link */}
-  <Link
-    to="/personal-expenses"
-    className="flex w-full items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition-all duration-300 hover:border-violet-300 hover:bg-violet-50 hover:text-violet-600 sm:w-auto sm:flex-none sm:gap-2 sm:rounded-xl sm:px-6 sm:py-3 sm:text-base"
-  >
-    <FaWallet className="text-violet-600" />
-    Personal Expenses
-  </Link>
 
 </div>
 

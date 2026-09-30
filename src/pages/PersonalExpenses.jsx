@@ -210,7 +210,7 @@ export default function PersonalExpenses() {
     <>
       <Navbar />
 
-      <main className="min-h-screen bg-slate-50 px-3 py-5 sm:px-6 sm:py-8 lg:px-8">
+      <main className="min-h-screen bg-slate-50 px-3 pt-5 pb-24 sm:px-6 sm:py-8 lg:px-8">
         <div className="mx-auto max-w-5xl">
           {/* Top Navigation & Breadcrumb */}
           <div className="mb-4 flex items-center justify-between">
