@@ -8,6 +8,7 @@
   import ProtectedRoute from "./components/ProtectedRoute";
   import ForgotPassword from "./pages/ForgotPassword";
   import ResetPassword from "./pages/ResetPassword";
+  import PersonalExpenses from "./pages/PersonalExpenses";
 
 
   function App() {
@@ -24,6 +25,15 @@
             element={
               <ProtectedRoute>
                 <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/personal-expenses"
+            element={
+              <ProtectedRoute>
+                <PersonalExpenses />
               </ProtectedRoute>
             }
           />

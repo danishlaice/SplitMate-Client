@@ -4,8 +4,7 @@ import Navbar from "../components/Navbar";
 import API from "../services/api";
 import { QRCodeCanvas } from "qrcode.react";
 import toast from "react-hot-toast";
-import { FaUserFriends } from "react-icons/fa";
-import { FaBars } from "react-icons/fa";
+import { FaUserFriends, FaBars, FaTrashAlt } from "react-icons/fa";
 
 function GroupDetails() {
   const { id } = useParams();
@@ -32,8 +31,7 @@ function GroupDetails() {
   const [showHistory, setShowHistory] = useState(false);
   const [showAllExpenses, setShowAllExpenses] = useState(false);
 
-  const [selectedSettlement, setSelectedSettlement] = useState(null);
-  const [showSettleConfirm, setShowSettleConfirm] = useState(false);
+  const [clearExpensesLoading, setClearExpensesLoading] = useState(false);
 
   const currentUser = (() => {
     try {
@@ -43,6 +41,39 @@ function GroupDetails() {
     }
   })();
   const currentUserId = currentUser.id || currentUser._id;
+
+  const requestMarkAsSettled = (item) => {
+    toast(
+      (t) => (
+        <div className="flex flex-col gap-2 py-0.5 text-white">
+          <p className="text-sm font-semibold">
+            Mark payment of ₹{Number(item.amount).toFixed(2)} from {item.from} as settled?
+          </p>
+          <div className="flex items-center justify-end gap-2 pt-1">
+            <button
+              onClick={() => toast.dismiss(t.id)}
+              className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-1 text-xs font-semibold text-slate-300 transition hover:bg-slate-700 hover:text-white"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={async () => {
+                toast.dismiss(t.id);
+                await markAsSettled(item.id);
+              }}
+              className="rounded-lg bg-emerald-600 px-3 py-1 text-xs font-semibold text-white transition hover:bg-emerald-700"
+            >
+              Confirm Settled
+            </button>
+          </div>
+        </div>
+      ),
+      {
+        id: `settle-${item.id}`,
+        duration: 7000,
+      }
+    );
+  };
 
   const markAsSettled = async (settlementId) => {
     try {
@@ -69,8 +100,6 @@ function GroupDetails() {
         };
       });
 
-      setShowSettleConfirm(false);
-      setSelectedSettlement(null);
       toast.success("Payment marked as settled!");
 
       await fetchBalance();
@@ -84,7 +113,6 @@ function GroupDetails() {
       setSettlingId(null);
     }
   };
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const [deleteGroupLoading, setDeleteGroupLoading] = useState(false);
   const [openMenu, setOpenMenu] = useState(false);
@@ -215,19 +243,46 @@ function GroupDetails() {
       setExpenseLoading(false);
     }
   };
-  const deleteExpense = async (expenseId) => {
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete this expense?"
+  const deleteExpense = (expenseId, description) => {
+    toast(
+      (t) => (
+        <div className="flex flex-col gap-2 py-0.5 text-white">
+          <p className="text-sm font-semibold">
+            Delete {description ? `"${description}"` : "this expense"}?
+          </p>
+          <div className="flex items-center justify-end gap-2 pt-1">
+            <button
+              onClick={() => toast.dismiss(t.id)}
+              className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-1 text-xs font-semibold text-slate-300 transition hover:bg-slate-700 hover:text-white"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={async () => {
+                toast.dismiss(t.id);
+                await executeDeleteExpense(expenseId);
+              }}
+              className="rounded-lg bg-rose-600 px-3 py-1 text-xs font-semibold text-white transition hover:bg-rose-700"
+            >
+              Delete
+            </button>
+          </div>
+        </div>
+      ),
+      {
+        id: `delete-expense-${expenseId}`,
+        duration: 6000,
+      }
     );
+  };
 
-    if (!confirmDelete) return;
-
+  const executeDeleteExpense = async (expenseId) => {
     try {
       setDeleteLoading(expenseId);
 
       const token = localStorage.getItem("token");
 
-      const res = await API.delete(`/expenses/delete/${expenseId}`, {
+      await API.delete(`/expenses/delete/${expenseId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -235,12 +290,98 @@ function GroupDetails() {
 
       toast.success("Expense Deleted Successfully");
 
-      fetchExpenses();
-      fetchBalance();
+      await fetchExpenses();
+      await fetchBalance();
     } catch (error) {
-      toast.error(error.response?.data?.message || "Error");
+      toast.error(error.response?.data?.message || "Error deleting expense");
     } finally {
       setDeleteLoading(null);
+    }
+  };
+
+  const promptClearAllExpenses = () => {
+    if (expenses.length === 0) return;
+
+    toast(
+      (t) => (
+        <div className="flex flex-col gap-2 py-0.5 text-white">
+          <div className="flex items-center gap-2">
+            <span className="text-base">🗑️</span>
+            <p className="text-sm font-semibold">
+              Clear all {expenses.length} {expenses.length === 1 ? "expense" : "expenses"}?
+            </p>
+          </div>
+          <p className="text-xs text-slate-300">
+            This will permanently delete all recorded expenses and reset balances.
+          </p>
+          <div className="flex items-center justify-end gap-2 pt-1">
+            <button
+              onClick={() => toast.dismiss(t.id)}
+              className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-1 text-xs font-semibold text-slate-300 transition hover:bg-slate-700 hover:text-white"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={async () => {
+                toast.dismiss(t.id);
+                await clearAllExpenses();
+              }}
+              disabled={clearExpensesLoading}
+              className="rounded-lg bg-rose-600 px-3 py-1 text-xs font-semibold text-white transition hover:bg-rose-700 disabled:opacity-50"
+            >
+              Clear All
+            </button>
+          </div>
+        </div>
+      ),
+      {
+        id: "clear-all-expenses-confirm",
+        duration: 7000,
+      }
+    );
+  };
+
+  const clearAllExpenses = async () => {
+    try {
+      setClearExpensesLoading(true);
+
+      const token = localStorage.getItem("token");
+
+      try {
+        const res = await API.delete(`/expenses/clear/${id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        toast.success(res.data?.message || "All expenses cleared successfully");
+      } catch (endpointError) {
+        // If the backend endpoint is not yet deployed on remote server (404), fall back to deleting individual expenses
+        if (endpointError.response?.status === 404 && expenses.length > 0) {
+          await Promise.all(
+            expenses.map((expense) =>
+              API.delete(`/expenses/delete/${expense._id}`, {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+              })
+            )
+          );
+          toast.success("All expenses cleared successfully");
+        } else {
+          throw endpointError;
+        }
+      }
+
+      setEditingId(null);
+      setOpenExpenseMenu(null);
+
+      await fetchExpenses();
+      await fetchBalance();
+    } catch (error) {
+      console.error("Error clearing expenses:", error);
+      toast.error(error.response?.data?.message || "Failed to clear expenses");
+    } finally {
+      setClearExpensesLoading(false);
     }
   };
   const updateExpense = async () => {
@@ -274,27 +415,54 @@ function GroupDetails() {
       setEditDescription("");
       setEditAmount("");
 
-      fetchExpenses();
-      fetchBalance();
+      await fetchExpenses();
+      await fetchBalance();
     } catch (error) {
       toast.error(error.response?.data?.message || "Error updating expense");
     } finally {
       setUpdateLoading(false);
     }
   };
-  const leaveGroup = async () => {
-    const confirmLeave = window.confirm(
-      "Are you sure you want to leave this group?"
+  const leaveGroup = () => {
+    toast(
+      (t) => (
+        <div className="flex flex-col gap-2 py-0.5 text-white">
+          <p className="text-sm font-semibold">
+            Are you sure you want to leave this group?
+          </p>
+          <div className="flex items-center justify-end gap-2 pt-1">
+            <button
+              onClick={() => toast.dismiss(t.id)}
+              className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-1 text-xs font-semibold text-slate-300 transition hover:bg-slate-700 hover:text-white"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={async () => {
+                toast.dismiss(t.id);
+                await executeLeaveGroup();
+              }}
+              className="rounded-lg bg-rose-600 px-3 py-1 text-xs font-semibold text-white transition hover:bg-rose-700"
+            >
+              Leave Group
+            </button>
+          </div>
+        </div>
+      ),
+      {
+        id: "leave-group-confirm",
+        duration: 6000,
+      }
     );
+  };
 
-    if (!confirmLeave) return;
-
+  const executeLeaveGroup = async () => {
     try {
       setLeaveLoading(true);
 
       const token = localStorage.getItem("token");
 
-      const res = await API.post(
+      await API.post(
         "/groups/leave",
         {
           groupId: id,
@@ -315,9 +483,39 @@ function GroupDetails() {
       setLeaveLoading(false);
     }
   };
-  const deleteGroup = async () => {
-    setShowDeleteConfirm(true);
+  const deleteGroup = () => {
+    toast(
+      (t) => (
+        <div className="flex flex-col gap-2 py-0.5 text-white">
+          <p className="text-sm font-semibold">
+            Permanently delete this group and all its expenses?
+          </p>
+          <div className="flex items-center justify-end gap-2 pt-1">
+            <button
+              onClick={() => toast.dismiss(t.id)}
+              className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-1 text-xs font-semibold text-slate-300 transition hover:bg-slate-700 hover:text-white"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={async () => {
+                toast.dismiss(t.id);
+                await confirmDeleteGroup();
+              }}
+              className="rounded-lg bg-rose-600 px-3 py-1 text-xs font-semibold text-white transition hover:bg-rose-700"
+            >
+              Delete Group
+            </button>
+          </div>
+        </div>
+      ),
+      {
+        id: "delete-group-confirm",
+        duration: 7000,
+      }
+    );
   };
+
   const confirmDeleteGroup = async () => {
     try {
       setDeleteGroupLoading(true);
@@ -333,7 +531,6 @@ function GroupDetails() {
         },
       });
 
-      setShowDeleteConfirm(false);
       toast.success("Group deleted successfully");
       navigate("/dashboard");
     } catch (error) {
@@ -757,10 +954,7 @@ function GroupDetails() {
                         {isReceiver ? (
 
                           <button
-                            onClick={() => {
-                              setSelectedSettlement(item);
-                              setShowSettleConfirm(true);
-                            }}
+                            onClick={() => requestMarkAsSettled(item)}
                             disabled={settlingId === item.id}
                             className="rounded-lg border border-emerald-300 bg-emerald-50 px-3.5 py-2 text-xs font-bold text-emerald-700 transition hover:bg-emerald-100 active:scale-95 sm:text-sm"
                           >
@@ -867,9 +1061,24 @@ function GroupDetails() {
                 </p>
               </div>
 
-              <span className="rounded-full bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-500">
-                {expenses.length} {expenses.length === 1 ? "Expense" : "Expenses"}
-              </span>
+              <div className="flex items-center gap-2">
+                <span className="hidden sm:inline-flex rounded-full bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-500">
+                  {expenses.length} {expenses.length === 1 ? "Expense" : "Expenses"}
+                </span>
+
+                {expenses.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={promptClearAllExpenses}
+                    disabled={clearExpensesLoading}
+                    className="inline-flex items-center gap-1.5 rounded-xl border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs font-semibold text-rose-600 transition hover:border-rose-300 hover:bg-rose-100 active:scale-95 disabled:opacity-50"
+                    title="Clear all expenses"
+                  >
+                    <FaTrashAlt className="text-xs" />
+                    <span>Clear All</span>
+                  </button>
+                )}
+              </div>
 
             </div>
 
@@ -1091,7 +1300,7 @@ function GroupDetails() {
                                             type="button"
                                             onClick={() => {
                                               setOpenExpenseMenu(null);
-                                              deleteExpense(expense._id);
+                                              deleteExpense(expense._id, expense.description);
                                             }}
                                             disabled={deleteLoading === expense._id}
                                             className="w-full rounded-lg px-3 py-2 text-left text-xs font-semibold text-red-600 hover:bg-red-50 sm:text-sm"
@@ -1215,124 +1424,7 @@ function GroupDetails() {
             </div>
           )}
 
-          {/* Settlement Confirmation Modal */}
-          {showSettleConfirm && selectedSettlement && (
-            <div
-              className="fixed inset-0 z-[200] flex items-center justify-center bg-slate-900/40 px-4 backdrop-blur-sm"
-              onClick={() => {
-                setShowSettleConfirm(false);
-                setSelectedSettlement(null);
-              }}
-            >
-              <div
-                className="w-full max-w-sm rounded-2xl border border-slate-200 bg-white p-5 shadow-2xl sm:p-6"
-                onClick={(e) => e.stopPropagation()}
-              >
 
-                {/* Icon */}
-                <div className="flex h-11 w-11 items-center justify-center rounded-full bg-amber-50 text-amber-600">
-                  ✓
-                </div>
-
-                {/* Title */}
-                <h2 className="mt-4 text-lg font-bold text-slate-900">
-                  Mark as Settled?
-                </h2>
-
-                {/* Message */}
-                <p className="mt-2 text-sm leading-6 text-slate-500">
-                  Are you sure you received{" "}
-                  <span className="font-semibold text-slate-800">
-                    ₹{Number(selectedSettlement.amount).toFixed(2)}
-                  </span>{" "}
-                  from{" "}
-                  <span className="font-semibold text-slate-800">
-                    {selectedSettlement.from}
-                  </span>
-                  ?
-                </p>
-
-                {/* Buttons */}
-                <div className="mt-6 flex gap-3">
-
-                  {/* Cancel */}
-                  <button
-                    onClick={() => {
-                      setShowSettleConfirm(false);
-                      setSelectedSettlement(null);
-                    }}
-                    disabled={settlingId === selectedSettlement.id}
-                    className="flex-1 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-slate-50"
-                  >
-                    Cancel
-                  </button>
-
-                  {/* Confirm */}
-                  <button
-                    onClick={async () => {
-                      await markAsSettled(selectedSettlement.id);
-                    }}
-                    disabled={settlingId === selectedSettlement.id}
-                    className={`flex-1 rounded-xl px-4 py-2.5 text-sm font-semibold text-white transition ${settlingId === selectedSettlement.id
-                        ? "cursor-not-allowed bg-emerald-300"
-                        : "bg-emerald-600 hover:bg-emerald-700"
-                      }`}
-                  >
-                    {settlingId === selectedSettlement.id
-                      ? "Updating..."
-                      : "Mark as Settled"}
-                  </button>
-
-                </div>
-
-              </div>
-            </div>
-          )}
-          {showDeleteConfirm && (
-            <div
-              className="fixed inset-0 z-[200] flex items-center justify-center bg-slate-900/40 px-4 backdrop-blur-sm"
-              onClick={() => setShowDeleteConfirm(false)}
-            >
-              <div
-                className="w-full max-w-sm rounded-2xl border border-slate-200 bg-white p-5 shadow-2xl sm:p-6"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <div className="flex h-11 w-11 items-center justify-center rounded-full bg-red-50 text-red-600">
-                  ⚠️
-                </div>
-
-                <h2 className="mt-4 text-lg font-bold text-slate-900">
-                  Delete Group?
-                </h2>
-
-                <p className="mt-2 text-sm leading-6 text-slate-500">
-                  Are you sure you want to delete this group? This will permanently
-                  delete the group and all its expenses.
-                </p>
-
-                <div className="mt-6 flex gap-3">
-                  <button
-                    onClick={() => setShowDeleteConfirm(false)}
-                    disabled={deleteGroupLoading}
-                    className="flex-1 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-slate-50"
-                  >
-                    Cancel
-                  </button>
-
-                  <button
-                    onClick={confirmDeleteGroup}
-                    disabled={deleteGroupLoading}
-                    className={`flex-1 rounded-xl px-4 py-2.5 text-sm font-semibold text-white transition ${deleteGroupLoading
-                        ? "cursor-not-allowed bg-red-300"
-                        : "bg-red-500 hover:bg-red-600"
-                      }`}
-                  >
-                    {deleteGroupLoading ? "Deleting..." : "Delete"}
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
 
 
         </div>

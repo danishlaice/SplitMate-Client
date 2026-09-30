@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { FaHome, FaSignOutAlt } from "react-icons/fa";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { FaHome, FaSignOutAlt, FaWallet } from "react-icons/fa";
 
 function Navbar() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   const handleLogout = () => {
@@ -14,6 +15,10 @@ function Navbar() {
     localStorage.removeItem("token");
     navigate("/");
   };
+
+  const isPersonalActive = location.pathname === "/personal-expenses";
+  const isHomeActive =
+    location.pathname === "/dashboard" || location.pathname.startsWith("/group");
 
   return (
     <>
@@ -31,15 +36,32 @@ function Navbar() {
           </Link>
 
           {/* Right Side */}
-          <div className="flex items-center gap-3 sm:gap-6">
+          <div className="flex items-center gap-2.5 sm:gap-6">
 
             {/* Home */}
             <Link
               to="/dashboard"
-              className="flex items-center gap-1.5 border-b-2 border-violet-600 pb-1 text-sm font-semibold text-violet-600 transition hover:text-violet-700 sm:gap-2 sm:text-base"
+              className={`flex items-center gap-1.5 pb-1 text-xs font-semibold transition sm:gap-2 sm:text-base ${
+                isHomeActive
+                  ? "border-b-2 border-violet-600 text-violet-600"
+                  : "text-slate-600 hover:text-violet-600"
+              }`}
             >
               <FaHome className="text-xs sm:text-sm" />
               Home
+            </Link>
+
+            {/* Personal Expenses */}
+            <Link
+              to="/personal-expenses"
+              className={`flex items-center gap-1.5 pb-1 text-xs font-semibold transition sm:gap-2 sm:text-base ${
+                isPersonalActive
+                  ? "border-b-2 border-violet-600 text-violet-600"
+                  : "text-slate-600 hover:text-violet-600"
+              }`}
+            >
+             
+              Personal 
             </Link>
 
             {/* Logout */}

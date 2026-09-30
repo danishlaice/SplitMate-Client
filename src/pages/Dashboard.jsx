@@ -13,7 +13,8 @@ import {
   FaEllipsisV,
   FaTimes,
   FaSearch,
-FaCalendarAlt,
+  FaCalendarAlt,
+  FaWallet,
 } from "react-icons/fa";
 
 function Dashboard() {
@@ -25,21 +26,21 @@ function Dashboard() {
   const [showScanner, setShowScanner] = useState(false);
   const [openMenu, setOpenMenu] = useState(null);
 
-const [currentUserId, setCurrentUserId] = useState(null);
+  const [currentUserId, setCurrentUserId] = useState(null);
 
-const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const [renameGroupId, setRenameGroupId] = useState(null);
-const [renameName, setRenameName] = useState("");
-const [renameLoading, setRenameLoading] = useState(false);
+  const [renameName, setRenameName] = useState("");
+  const [renameLoading, setRenameLoading] = useState(false);
 
-const [deleteGroupId, setDeleteGroupId] = useState(null);
-const [deleteGroupName, setDeleteGroupName] = useState("");
-const [deleteLoading, setDeleteLoading] = useState(false);
+  const [deleteGroupId, setDeleteGroupId] = useState(null);
+  const [deleteGroupName, setDeleteGroupName] = useState("");
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
-const [leaveGroupId, setLeaveGroupId] = useState(null);
-const [leaveGroupName, setLeaveGroupName] = useState("");
-const [leaveLoading, setLeaveLoading] = useState(false);
+  const [leaveGroupId, setLeaveGroupId] = useState(null);
+  const [leaveGroupName, setLeaveGroupName] = useState("");
+  const [leaveLoading, setLeaveLoading] = useState(false);
 
   const [loading, setLoading] = useState(false);
   const [joinLoading, setJoinLoading] = useState(false);
@@ -141,25 +142,26 @@ const handleLeaveGroup = async () => {
 };
 
   useEffect(() => {
-  const user = JSON.parse(localStorage.getItem("user"));
+    const user = JSON.parse(localStorage.getItem("user"));
 
-  if (user) {
-    setCurrentUserId(user.id);
-  }
+    if (user) {
+      setCurrentUserId(user.id);
+    }
 
-  fetchGroups();
-}, []);
-useEffect(() => {
-  const handleOutsideClick = () => {
-    setOpenMenu(null);
-  };
+    fetchGroups();
+  }, []);
 
-  document.addEventListener("click", handleOutsideClick);
+  useEffect(() => {
+    const handleOutsideClick = () => {
+      setOpenMenu(null);
+    };
 
-  return () => {
-    document.removeEventListener("click", handleOutsideClick);
-  };
-}, []);
+    document.addEventListener("click", handleOutsideClick);
+
+    return () => {
+      document.removeEventListener("click", handleOutsideClick);
+    };
+  }, []);
 
   // =========================
   // Create Group
@@ -272,7 +274,7 @@ useEffect(() => {
               Action Buttons
           ========================= */}
 
-         <div className="flex gap-2 sm:gap-3">
+         <div className="flex flex-wrap gap-2 sm:gap-3">
 
   {/* Create Group */}
   <button
@@ -299,6 +301,15 @@ useEffect(() => {
     <FaUserFriends />
     Join Group
   </button>
+
+  {/* Personal Expenses Page link */}
+  <Link
+    to="/personal-expenses"
+    className="flex w-full items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition-all duration-300 hover:border-violet-300 hover:bg-violet-50 hover:text-violet-600 sm:w-auto sm:flex-none sm:gap-2 sm:rounded-xl sm:px-6 sm:py-3 sm:text-base"
+  >
+    <FaWallet className="text-violet-600" />
+    Personal Expenses
+  </Link>
 
 </div>
 
@@ -1005,6 +1016,8 @@ useEffect(() => {
           </div>
 
         )}
+
+
 
       </main>
     </>
