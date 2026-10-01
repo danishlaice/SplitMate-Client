@@ -40,8 +40,15 @@ function Login() {
 
       navigate("/dashboard");
     } catch (error) {
-      toast.error(error.response?.data?.message || "Login Failed");
-    } finally {
+  console.log("LOGIN ERROR:", error);
+  console.log("LOGIN RESPONSE:", error.response?.data);
+
+  toast.error(
+    error.response?.data?.message ||
+    error.message ||
+    "Login Failed"
+  );
+}finally {
       setLoading(false);
     }
   };
