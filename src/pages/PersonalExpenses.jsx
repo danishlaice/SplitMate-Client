@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import API from "../services/api";
+import safeStorage from "../utils/storage";
 import toast from "react-hot-toast";
 import {
   FaPlus,
@@ -58,7 +59,7 @@ export default function PersonalExpenses() {
   const fetchPersonalExpenses = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem("token");
+      const token = safeStorage.getItem("token");
 
       const res = await API.get("/personal-expenses", {
         headers: {
@@ -81,7 +82,7 @@ export default function PersonalExpenses() {
   const handleSaveExpense = async (formData) => {
     try {
       setModalLoading(true);
-      const token = localStorage.getItem("token");
+      const token = safeStorage.getItem("token");
 
       if (editingExpense?._id) {
         // Edit existing
@@ -128,7 +129,7 @@ export default function PersonalExpenses() {
 
     try {
       setDeleteLoading(true);
-      const token = localStorage.getItem("token");
+      const token = safeStorage.getItem("token");
 
       const res = await API.delete(`/personal-expenses/${deleteId}`, {
         headers: {

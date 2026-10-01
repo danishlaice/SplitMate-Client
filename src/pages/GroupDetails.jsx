@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import API from "../services/api";
+import safeStorage from "../utils/storage";
 import { QRCodeCanvas } from "qrcode.react";
 import toast from "react-hot-toast";
 import { FaUserFriends, FaBars, FaTrashAlt } from "react-icons/fa";
@@ -35,7 +36,8 @@ function GroupDetails() {
 
   const currentUser = (() => {
     try {
-      return JSON.parse(localStorage.getItem("user")) || {};
+      const rawUser = safeStorage.getItem("user");
+      return rawUser ? JSON.parse(rawUser) : {};
     } catch {
       return {};
     }
@@ -79,7 +81,7 @@ function GroupDetails() {
     try {
       setSettlingId(settlementId);
 
-      const token = localStorage.getItem("token");
+      const token = safeStorage.getItem("token");
 
       await API.put(
         `/balance/settlement/${settlementId}`,
@@ -124,7 +126,7 @@ function GroupDetails() {
 
   const fetchGroup = async () => {
     try {
-      const token = localStorage.getItem("token");
+      const token = safeStorage.getItem("token");
 
       const res = await API.get(`/groups/${id}`, {
         headers: {
@@ -141,7 +143,7 @@ function GroupDetails() {
   };
   const fetchExpenses = async () => {
     try {
-      const token = localStorage.getItem("token");
+      const token = safeStorage.getItem("token");
 
       const res = await API.get(`/expenses/${id}`, {
         headers: {
@@ -156,7 +158,7 @@ function GroupDetails() {
   };
   const fetchBalance = async () => {
     try {
-      const token = localStorage.getItem("token");
+      const token = safeStorage.getItem("token");
 
       const res = await API.get(`/expenses/balance/${id}`, {
         headers: {
@@ -178,7 +180,7 @@ function GroupDetails() {
 
     try {
       setAddMemberLoading(true);
-      const token = localStorage.getItem("token");
+      const token = safeStorage.getItem("token");
 
       const res = await API.post(
         "/groups/add-member",
@@ -214,7 +216,7 @@ function GroupDetails() {
     try {
       setExpenseLoading(true);
 
-      const token = localStorage.getItem("token");
+      const token = safeStorage.getItem("token");
 
       const res = await API.post(
         "/expenses/add",
@@ -280,7 +282,7 @@ function GroupDetails() {
     try {
       setDeleteLoading(expenseId);
 
-      const token = localStorage.getItem("token");
+      const token = safeStorage.getItem("token");
 
       await API.delete(`/expenses/delete/${expenseId}`, {
         headers: {
@@ -345,7 +347,7 @@ function GroupDetails() {
     try {
       setClearExpensesLoading(true);
 
-      const token = localStorage.getItem("token");
+      const token = safeStorage.getItem("token");
 
       try {
         const res = await API.delete(`/expenses/clear/${id}`, {
@@ -394,7 +396,7 @@ function GroupDetails() {
     try {
       setUpdateLoading(true);
 
-      const token = localStorage.getItem("token");
+      const token = safeStorage.getItem("token");
 
       const res = await API.put(
         `/expenses/update/${editingId}`,
@@ -460,7 +462,7 @@ function GroupDetails() {
     try {
       setLeaveLoading(true);
 
-      const token = localStorage.getItem("token");
+      const token = safeStorage.getItem("token");
 
       await API.post(
         "/groups/leave",
@@ -520,7 +522,7 @@ function GroupDetails() {
     try {
       setDeleteGroupLoading(true);
 
-      const token = localStorage.getItem("token");
+      const token = safeStorage.getItem("token");
 
       await API.delete("/groups/delete", {
         headers: {

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { FaSignOutAlt, FaUsers, FaCreditCard } from "react-icons/fa";
+import safeStorage from "../utils/storage";
 import BottomNav from "./BottomNav";
 
 function Navbar() {
@@ -13,7 +14,8 @@ function Navbar() {
   };
 
   const confirmLogout = () => {
-    localStorage.removeItem("token");
+    safeStorage.removeItem("token");
+    safeStorage.removeItem("user");
     navigate("/");
   };
 

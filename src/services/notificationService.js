@@ -1,4 +1,5 @@
 import { parsePaymentNotification } from "../utils/notificationParser";
+import safeStorage from "../utils/storage";
 
 const SETTING_KEY = "splitmate_smart_detection_enabled";
 const DISMISSED_TX_KEY = "splitmate_dismissed_tx_ids";
@@ -8,7 +9,7 @@ export const notificationService = {
   // Check if Smart Detection is enabled by user
   isEnabled() {
     try {
-      return localStorage.getItem(SETTING_KEY) === "true";
+      return safeStorage.getItem(SETTING_KEY) === "true";
     } catch {
       return false;
     }
@@ -17,7 +18,7 @@ export const notificationService = {
   // Toggle or set Smart Detection
   setEnabled(enabled) {
     try {
-      localStorage.setItem(SETTING_KEY, enabled ? "true" : "false");
+      safeStorage.setItem(SETTING_KEY, enabled ? "true" : "false");
       window.dispatchEvent(
         new CustomEvent("splitmate:smart-detection-toggled", {
           detail: { enabled },
@@ -56,7 +57,7 @@ export const notificationService = {
     if (!transactionId) return false;
     try {
       const dismissed = JSON.parse(
-        localStorage.getItem(DISMISSED_TX_KEY) || "[]"
+        safeStorage.getItem(DISMISSED_TX_KEY) || "[]"
       );
       return dismissed.includes(transactionId);
     } catch {
@@ -69,13 +70,13 @@ export const notificationService = {
     if (!transactionId) return;
     try {
       const dismissed = JSON.parse(
-        localStorage.getItem(DISMISSED_TX_KEY) || "[]"
+        safeStorage.getItem(DISMISSED_TX_KEY) || "[]"
       );
       if (!dismissed.includes(transactionId)) {
         dismissed.push(transactionId);
         // Keep last 100 IDs to avoid unbounded storage
         if (dismissed.length > 100) dismissed.shift();
-        localStorage.setItem(DISMISSED_TX_KEY, JSON.stringify(dismissed));
+        safeStorage.setItem(DISMISSED_TX_KEY, JSON.stringify(dismissed));
       }
       window.dispatchEvent(
         new CustomEvent("splitmate:expense-dismissed", {

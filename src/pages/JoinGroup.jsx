@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import API from "../services/api";
+import safeStorage from "../utils/storage";
 import toast from "react-hot-toast";
 
 function JoinGroup() {
@@ -12,7 +13,7 @@ function JoinGroup() {
   try {
     setLoading(true);
 
-    const token = localStorage.getItem("token");
+    const token = safeStorage.getItem("token");
 
     if (!token) {
       toast.error("Please login first");

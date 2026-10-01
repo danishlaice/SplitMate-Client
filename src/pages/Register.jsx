@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import API from "../services/api";
+import safeStorage from "../utils/storage";
 import {
   FaEye,
   FaEyeSlash,
@@ -35,8 +36,8 @@ function Register() {
         password,
       });
 
-      localStorage.setItem("token", res.data.token);
-      localStorage.setItem("user", JSON.stringify(res.data.user));
+      safeStorage.setItem("token", res.data.token);
+      safeStorage.setItem("user", JSON.stringify(res.data.user));
 
       toast.success("Registration Successful");
 

@@ -2,6 +2,7 @@ import Navbar from "../components/Navbar";
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import API from "../services/api";
+import safeStorage from "../utils/storage";
 import QrScanner from "../components/QrScanner";
 import toast from "react-hot-toast";
 import {
@@ -52,7 +53,7 @@ function Dashboard() {
 
   const fetchGroups = async () => {
     try {
-      const token = localStorage.getItem("token");
+      const token = safeStorage.getItem("token");
 
       const res = await API.get("/groups", {
         headers: {
@@ -69,7 +70,7 @@ function Dashboard() {
   try {
     setDeleteLoading(true);
 
-    const token = localStorage.getItem("token");
+    const token = safeStorage.getItem("token");
 
     const res = await API.delete("/groups/delete", {
       headers: {
@@ -105,7 +106,7 @@ const handleLeaveGroup = async () => {
   try {
     setLeaveLoading(true);
 
-    const token = localStorage.getItem("token");
+    const token = safeStorage.getItem("token");
 
     const res = await API.post(
       "/groups/leave",
@@ -141,10 +142,16 @@ const handleLeaveGroup = async () => {
 };
 
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("user"));
+    let user = null;
+    try {
+      const rawUser = safeStorage.getItem("user");
+      user = rawUser ? JSON.parse(rawUser) : null;
+    } catch {
+      user = null;
+    }
 
     if (user) {
-      setCurrentUserId(user.id);
+      setCurrentUserId(user.id || user._id);
     }
 
     fetchGroups();
@@ -175,7 +182,7 @@ const handleLeaveGroup = async () => {
     try {
       setLoading(true);
 
-      const token = localStorage.getItem("token");
+      const token = safeStorage.getItem("token");
 
       const res = await API.post(
         "/groups/create",
@@ -217,7 +224,7 @@ const handleLeaveGroup = async () => {
     try {
       setJoinLoading(true);
 
-      const token = localStorage.getItem("token");
+      const token = safeStorage.getItem("token");
 
       const res = await API.post(
         "/groups/join-by-code",
@@ -785,7 +792,7 @@ const handleLeaveGroup = async () => {
             try {
               setRenameLoading(true);
 
-              const token = localStorage.getItem("token");
+              const token = safeStorage.getItem("token");
 
               const res = await API.put(
                 "/groups/rename",
@@ -965,7 +972,7 @@ const handleLeaveGroup = async () => {
                   setShowScanner(false);
 
                   try {
-                    const token = localStorage.getItem("token");
+                    const token = safeStorage.getItem("token");
 
                     const scannedInviteCode =
                       decodedText.split("/").pop();
