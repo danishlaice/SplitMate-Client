@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import API from "../services/api";
-import safeStorage from "../utils/storage";
 import toast from "react-hot-toast";
 import {
   FaPlus,
@@ -59,7 +58,7 @@ export default function PersonalExpenses() {
   const fetchPersonalExpenses = async () => {
     try {
       setLoading(true);
-      const token = safeStorage.getItem("token");
+      const token = localStorage.getItem("token");
 
       const res = await API.get("/personal-expenses", {
         headers: {
@@ -82,7 +81,7 @@ export default function PersonalExpenses() {
   const handleSaveExpense = async (formData) => {
     try {
       setModalLoading(true);
-      const token = safeStorage.getItem("token");
+      const token = localStorage.getItem("token");
 
       if (editingExpense?._id) {
         // Edit existing
@@ -129,7 +128,7 @@ export default function PersonalExpenses() {
 
     try {
       setDeleteLoading(true);
-      const token = safeStorage.getItem("token");
+      const token = localStorage.getItem("token");
 
       const res = await API.delete(`/personal-expenses/${deleteId}`, {
         headers: {
@@ -229,9 +228,8 @@ export default function PersonalExpenses() {
               className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50"
             >
               <FaBell
-                className={`text-xs ${
-                  smartDetectionEnabled ? "text-violet-600" : "text-slate-400"
-                }`}
+                className={`text-xs ${smartDetectionEnabled ? "text-violet-600" : "text-slate-400"
+                  }`}
               />
               Smart Detection
             </button>
@@ -254,16 +252,14 @@ export default function PersonalExpenses() {
                 <button
                   type="button"
                   onClick={handleToggleSmartDetection}
-                  className={`inline-flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-bold transition sm:text-sm ${
-                    smartDetectionEnabled
+                  className={`inline-flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-bold transition sm:text-sm ${smartDetectionEnabled
                       ? "bg-emerald-600 text-white shadow-sm hover:bg-emerald-700"
                       : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
-                  }`}
+                    }`}
                 >
                   <FaCheckCircle
-                    className={`text-xs ${
-                      smartDetectionEnabled ? "text-white" : "text-slate-300"
-                    }`}
+                    className={`text-xs ${smartDetectionEnabled ? "text-white" : "text-slate-300"
+                      }`}
                   />
                   {smartDetectionEnabled ? "Enabled" : "Enable"}
                 </button>

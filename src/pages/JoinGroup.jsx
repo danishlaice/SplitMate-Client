@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import API from "../services/api";
-import safeStorage from "../utils/storage";
 import toast from "react-hot-toast";
 
 function JoinGroup() {
@@ -10,39 +9,39 @@ function JoinGroup() {
   const [loading, setLoading] = useState(false);
 
   const joinGroup = async () => {
-  try {
-    setLoading(true);
+    try {
+      setLoading(true);
 
-    const token = safeStorage.getItem("token");
+      const token = localStorage.getItem("token");
 
-    if (!token) {
-      toast.error("Please login first");
-      navigate("/");
-      return;
-    }
-
-    const res = await API.post(
-      "/groups/join-by-code",
-      {
-        inviteCode,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+      if (!token) {
+        toast.error("Please login first");
+        navigate("/");
+        return;
       }
-    );
 
-    toast.success("Joined Group Successfully");
+      const res = await API.post(
+        "/groups/join-by-code",
+        {
+          inviteCode,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-    navigate(`/group/${res.data.groupId}`);
+      toast.success("Joined Group Successfully");
 
-  } catch (error) {
-    toast.error(error.response?.data?.message || "Something went wrong");
-  } finally {
-    setLoading(false);
-  }
-};
+      navigate(`/group/${res.data.groupId}`);
+
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-950">
@@ -60,16 +59,15 @@ function JoinGroup() {
         </p>
 
         <button
-  onClick={joinGroup}
-  disabled={loading}
-  className={`mt-6 px-6 py-3 rounded-lg text-white font-semibold transition ${
-    loading
-      ? "bg-blue-400 cursor-not-allowed"
-      : "bg-blue-600 hover:bg-blue-700"
-  }`}
->
-  {loading ? "Joining..." : "Join Group"}
-</button>
+          onClick={joinGroup}
+          disabled={loading}
+          className={`mt-6 px-6 py-3 rounded-lg text-white font-semibold transition ${loading
+              ? "bg-blue-400 cursor-not-allowed"
+              : "bg-blue-600 hover:bg-blue-700"
+            }`}
+        >
+          {loading ? "Joining..." : "Join Group"}
+        </button>
       </div>
     </div>
   );

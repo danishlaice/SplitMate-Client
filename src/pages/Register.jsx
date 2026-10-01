@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import API from "../services/api";
-import safeStorage from "../utils/storage";
 import {
   FaEye,
   FaEyeSlash,
@@ -36,8 +35,8 @@ function Register() {
         password,
       });
 
-      safeStorage.setItem("token", res.data.token);
-      safeStorage.setItem("user", JSON.stringify(res.data.user));
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("user", JSON.stringify(res.data.user));
 
       toast.success("Registration Successful");
 
@@ -183,8 +182,8 @@ function Register() {
             type="submit"
             disabled={loading}
             className={`w-full h-12 rounded-xl text-white font-semibold flex items-center justify-center gap-2 transition-all duration-300 ${loading
-                ? "bg-violet-400 cursor-not-allowed"
-                : "bg-gradient-to-r from-violet-600 to-blue-500 hover:from-violet-700 hover:to-blue-600 hover:scale-[1.01] shadow-lg shadow-violet-500/20"
+              ? "bg-violet-400 cursor-not-allowed"
+              : "bg-gradient-to-r from-violet-600 to-blue-500 hover:from-violet-700 hover:to-blue-600 hover:scale-[1.01] shadow-lg shadow-violet-500/20"
               }`}
           >
             <FiUserPlus className="text-lg" />

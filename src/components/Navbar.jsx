@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { FaSignOutAlt, FaUsers, FaCreditCard } from "react-icons/fa";
-import safeStorage from "../utils/storage";
 import BottomNav from "./BottomNav";
 
 function Navbar() {
@@ -14,8 +13,7 @@ function Navbar() {
   };
 
   const confirmLogout = () => {
-    safeStorage.removeItem("token");
-    safeStorage.removeItem("user");
+    localStorage.removeItem("token");
     navigate("/");
   };
 
@@ -47,11 +45,10 @@ function Navbar() {
               <Link
                 to="/dashboard"
                 id="desktop-nav-groups"
-                className={`flex items-center gap-2 pb-1 text-sm font-semibold transition ${
-                  isGroupsActive
+                className={`flex items-center gap-2 pb-1 text-sm font-semibold transition ${isGroupsActive
                     ? "border-b-2 border-violet-600 text-violet-600"
                     : "text-slate-600 hover:text-violet-600"
-                }`}
+                  }`}
               >
                 <FaUsers className="text-sm" />
                 Groups
@@ -61,11 +58,10 @@ function Navbar() {
               <Link
                 to="/personal-expenses"
                 id="desktop-nav-personal"
-                className={`flex items-center gap-2 pb-1 text-sm font-semibold transition ${
-                  isPersonalActive
+                className={`flex items-center gap-2 pb-1 text-sm font-semibold transition ${isPersonalActive
                     ? "border-b-2 border-violet-600 text-violet-600"
                     : "text-slate-600 hover:text-violet-600"
-                }`}
+                  }`}
               >
                 <FaCreditCard className="text-sm" />
                 Personal

@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import API from "../services/api";
-import safeStorage from "../utils/storage";
 import { QRCodeCanvas } from "qrcode.react";
 import toast from "react-hot-toast";
 import { FaUserFriends, FaBars, FaTrashAlt } from "react-icons/fa";
@@ -36,8 +35,7 @@ function GroupDetails() {
 
   const currentUser = (() => {
     try {
-      const rawUser = safeStorage.getItem("user");
-      return rawUser ? JSON.parse(rawUser) : {};
+      return JSON.parse(localStorage.getItem("user")) || {};
     } catch {
       return {};
     }
@@ -81,7 +79,7 @@ function GroupDetails() {
     try {
       setSettlingId(settlementId);
 
-      const token = safeStorage.getItem("token");
+      const token = localStorage.getItem("token");
 
       await API.put(
         `/balance/settlement/${settlementId}`,
@@ -126,7 +124,7 @@ function GroupDetails() {
 
   const fetchGroup = async () => {
     try {
-      const token = safeStorage.getItem("token");
+      const token = localStorage.getItem("token");
 
       const res = await API.get(`/groups/${id}`, {
         headers: {
@@ -143,7 +141,7 @@ function GroupDetails() {
   };
   const fetchExpenses = async () => {
     try {
-      const token = safeStorage.getItem("token");
+      const token = localStorage.getItem("token");
 
       const res = await API.get(`/expenses/${id}`, {
         headers: {
@@ -158,7 +156,7 @@ function GroupDetails() {
   };
   const fetchBalance = async () => {
     try {
-      const token = safeStorage.getItem("token");
+      const token = localStorage.getItem("token");
 
       const res = await API.get(`/expenses/balance/${id}`, {
         headers: {
@@ -180,7 +178,7 @@ function GroupDetails() {
 
     try {
       setAddMemberLoading(true);
-      const token = safeStorage.getItem("token");
+      const token = localStorage.getItem("token");
 
       const res = await API.post(
         "/groups/add-member",
@@ -216,7 +214,7 @@ function GroupDetails() {
     try {
       setExpenseLoading(true);
 
-      const token = safeStorage.getItem("token");
+      const token = localStorage.getItem("token");
 
       const res = await API.post(
         "/expenses/add",
@@ -282,7 +280,7 @@ function GroupDetails() {
     try {
       setDeleteLoading(expenseId);
 
-      const token = safeStorage.getItem("token");
+      const token = localStorage.getItem("token");
 
       await API.delete(`/expenses/delete/${expenseId}`, {
         headers: {
@@ -347,7 +345,7 @@ function GroupDetails() {
     try {
       setClearExpensesLoading(true);
 
-      const token = safeStorage.getItem("token");
+      const token = localStorage.getItem("token");
 
       try {
         const res = await API.delete(`/expenses/clear/${id}`, {
@@ -396,7 +394,7 @@ function GroupDetails() {
     try {
       setUpdateLoading(true);
 
-      const token = safeStorage.getItem("token");
+      const token = localStorage.getItem("token");
 
       const res = await API.put(
         `/expenses/update/${editingId}`,
@@ -462,7 +460,7 @@ function GroupDetails() {
     try {
       setLeaveLoading(true);
 
-      const token = safeStorage.getItem("token");
+      const token = localStorage.getItem("token");
 
       await API.post(
         "/groups/leave",
@@ -522,7 +520,7 @@ function GroupDetails() {
     try {
       setDeleteGroupLoading(true);
 
-      const token = safeStorage.getItem("token");
+      const token = localStorage.getItem("token");
 
       await API.delete("/groups/delete", {
         headers: {
@@ -867,8 +865,8 @@ function GroupDetails() {
               onClick={addExpense}
               disabled={expenseLoading}
               className={`mt-4 w-full rounded-xl py-3 text-sm font-semibold text-white transition sm:w-auto sm:px-8 ${expenseLoading
-                  ? "cursor-not-allowed bg-emerald-400"
-                  : "bg-emerald-600 hover:bg-emerald-700"
+                ? "cursor-not-allowed bg-emerald-400"
+                : "bg-emerald-600 hover:bg-emerald-700"
                 }`}
             >
               {expenseLoading ? "Adding..." : "Add Expense"}
@@ -1173,8 +1171,8 @@ function GroupDetails() {
                               onClick={updateExpense}
                               disabled={updateLoading}
                               className={`flex-1 rounded-xl py-2.5 text-xs font-semibold text-white transition sm:flex-none sm:px-6 sm:text-sm ${updateLoading
-                                  ? "cursor-not-allowed bg-emerald-400"
-                                  : "bg-emerald-600 hover:bg-emerald-700"
+                                ? "cursor-not-allowed bg-emerald-400"
+                                : "bg-emerald-600 hover:bg-emerald-700"
                                 }`}
                             >
                               {updateLoading ? "Saving..." : "Save"}

@@ -1,8 +1,7 @@
 import { Navigate } from "react-router-dom";
-import safeStorage from "../utils/storage";
 
 function ProtectedRoute({ children }) {
-  const token = safeStorage.getItem("token");
+  const token = localStorage.getItem("token");
 
   if (!token) {
     return <Navigate to="/" replace />;
