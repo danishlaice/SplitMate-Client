@@ -4,7 +4,7 @@ import API from "../services/api";
 import {
   FaEye,
   FaEyeSlash,
- 
+
   FaUsers,
 } from "react-icons/fa";
 import {
@@ -25,20 +25,12 @@ function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
 
-    const cleanEmail = email.trim().toLowerCase();
-    const cleanPassword = password.trim();
-
-    if (!cleanEmail || !cleanPassword) {
-      toast.error("Please enter email and password");
-      return;
-    }
-
     try {
       setLoading(true);
 
       const res = await API.post("/users/login", {
-        email: cleanEmail,
-        password: cleanPassword,
+        email,
+        password,
       });
 
       localStorage.setItem("token", res.data.token);
@@ -48,12 +40,7 @@ function Login() {
 
       navigate("/dashboard");
     } catch (error) {
-      const message =
-        error.response?.data?.message ||
-        (error.message === "Network Error"
-          ? "Unable to connect to server. Please check your internet connection."
-          : error.message || "Login Failed");
-      toast.error(message);
+      toast.error(error.response?.data?.message || "Login Failed");
     } finally {
       setLoading(false);
     }
@@ -67,7 +54,7 @@ function Login() {
 
       <div className="absolute -bottom-44 -right-44 w-[360px] h-[360px] bg-blue-300/20 rounded-full blur-3xl"></div>
 
-      
+
 
       {/* Login Card */}
       <div className="relative z-10 w-full max-w-[350px] rounded-[28px] border border-white bg-white/95 backdrop-blur-xl shadow-[0_20px_60px_rgba(79,70,229,0.20)] px-6 py-7 sm:px-7 sm:py-8">
@@ -77,18 +64,18 @@ function Login() {
 
           <div className="flex items-center justify-center gap-2">
 
-            
+
 
             {/* Logo Text */}
-<h1
-  className="text-[38px] leading-none font-semibold tracking-tight text-[#111a3a]"
-  style={{ fontFamily: "Comfortaa, sans-serif" }}
->
-  Split
-  <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-blue-500">
-    Mate
-  </span>
-</h1>
+            <h1
+              className="text-[38px] leading-none font-semibold tracking-tight text-[#111a3a]"
+              style={{ fontFamily: "Comfortaa, sans-serif" }}
+            >
+              Split
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-blue-500">
+                Mate
+              </span>
+            </h1>
 
           </div>
 
@@ -106,25 +93,20 @@ function Login() {
           <div>
 
             <label className="block text-[15px] font-semibold text-slate-700 mb-2">
-  Email
-</label>
+              Email
+            </label>
 
             <div className="relative">
 
               <FiMail
-  className="absolute left-4 top-1/2 -translate-y-1/2 text-violet-600 text-lg"
-/>
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-violet-600 text-lg"
+              />
 
               <input
                 type="email"
                 placeholder="Enter your email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                autoComplete="email"
-                autoCapitalize="none"
-                autoCorrect="off"
-                spellCheck="false"
-                required
                 className="w-full h-12 bg-white border-2 border-[#e5e0ff] rounded-xl px-4 pl-11 text-[#111a3a] placeholder-[#8792b2] outline-none transition-all duration-300 focus:border-violet-500 focus:ring-2 focus:ring-violet-500/10"
               />
 
@@ -136,25 +118,20 @@ function Login() {
           <div>
 
             <label className="block text-[15px] font-semibold text-slate-700 mb-2">
-  Password
-</label>
+              Password
+            </label>
 
             <div className="relative">
 
-             <FiLock
-  className="absolute left-4 top-1/2 -translate-y-1/2 text-violet-600 text-lg"
-/>
+              <FiLock
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-violet-600 text-lg"
+              />
 
               <input
                 type={showPassword ? "text" : "password"}
                 placeholder="Enter your password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                autoComplete="current-password"
-                autoCapitalize="none"
-                autoCorrect="off"
-                spellCheck="false"
-                required
                 className="w-full h-12 bg-white border-2 border-[#e5e0ff] rounded-xl px-4 pl-11 pr-12 text-[#111a3a] placeholder-[#8792b2] outline-none transition-all duration-300 focus:border-violet-500 focus:ring-2 focus:ring-violet-500/10"
               />
 
@@ -173,27 +150,26 @@ function Login() {
 
           </div>
           <div className="flex justify-end -mt-2">
-  <Link
-    to="/forgot-password"
-    className="text-sm font-semibold text-violet-600 hover:text-blue-600 transition-colors"
-  >
-    Forgot password?
-  </Link>
-</div>
+            <Link
+              to="/forgot-password"
+              className="text-sm font-semibold text-violet-600 hover:text-blue-600 transition-colors"
+            >
+              Forgot password?
+            </Link>
+          </div>
 
           {/* Login Button */}
           <button
-  type="submit"
-  disabled={loading}
-  className={`w-full h-12 rounded-xl text-white font-semibold flex items-center justify-center gap-2 transition-all duration-300 ${
-    loading
-      ? "bg-violet-400 cursor-not-allowed"
-      : "bg-gradient-to-r from-violet-600 to-blue-500 hover:from-violet-700 hover:to-blue-600 hover:scale-[1.01] shadow-lg shadow-violet-500/20"
-  }`}
->
-  <FiLogIn className="text-lg" />
-  {loading ? "Logging in..." : "Login"}
-</button>
+            type="submit"
+            disabled={loading}
+            className={`w-full h-12 rounded-xl text-white font-semibold flex items-center justify-center gap-2 transition-all duration-300 ${loading
+                ? "bg-violet-400 cursor-not-allowed"
+                : "bg-gradient-to-r from-violet-600 to-blue-500 hover:from-violet-700 hover:to-blue-600 hover:scale-[1.01] shadow-lg shadow-violet-500/20"
+              }`}
+          >
+            <FiLogIn className="text-lg" />
+            {loading ? "Logging in..." : "Login"}
+          </button>
 
         </form>
 

@@ -26,22 +26,13 @@ function Register() {
   const handleRegister = async (e) => {
     e.preventDefault();
 
-    const cleanName = name.trim();
-    const cleanEmail = email.trim().toLowerCase();
-    const cleanPassword = password.trim();
-
-    if (!cleanName || !cleanEmail || !cleanPassword) {
-      toast.error("Please fill all fields");
-      return;
-    }
-
     try {
       setLoading(true);
 
       const res = await API.post("/users/register", {
-        name: cleanName,
-        email: cleanEmail,
-        password: cleanPassword,
+        name,
+        email,
+        password,
       });
 
       localStorage.setItem("token", res.data.token);
@@ -51,12 +42,9 @@ function Register() {
 
       navigate("/dashboard");
     } catch (error) {
-      const message =
-        error.response?.data?.message ||
-        (error.message === "Network Error"
-          ? "Unable to connect to server. Please check your internet connection."
-          : error.message || "Registration Failed");
-      toast.error(message);
+      toast.error(
+        error.response?.data?.message || "Registration Failed"
+      );
     } finally {
       setLoading(false);
     }
@@ -78,18 +66,18 @@ function Register() {
 
           <div className="flex items-center justify-center gap-2">
 
-            
+
 
             {/* Logo Text */}
             <h1
-  className="text-[38px] leading-none font-semibold tracking-tight text-[#111a3a]"
-  style={{ fontFamily: "Comfortaa, sans-serif" }}
->
-  Split
-  <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-blue-500">
-    Mate
-  </span>
-</h1>
+              className="text-[38px] leading-none font-semibold tracking-tight text-[#111a3a]"
+              style={{ fontFamily: "Comfortaa, sans-serif" }}
+            >
+              Split
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-blue-500">
+                Mate
+              </span>
+            </h1>
 
           </div>
 
@@ -121,10 +109,6 @@ function Register() {
                 placeholder="Enter your name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                autoComplete="name"
-                autoCapitalize="words"
-                spellCheck="false"
-                required
                 className="w-full h-12 bg-white border-2 border-[#e5e0ff] rounded-xl px-4 pl-11 text-[#111a3a] placeholder-[#8792b2] outline-none transition-all duration-300 focus:border-violet-500 focus:ring-2 focus:ring-violet-500/10"
               />
 
@@ -135,9 +119,9 @@ function Register() {
           {/* Email */}
           <div>
 
-             <label className="block text-[15px] font-semibold text-slate-700 mb-2">
-  Email
-</label>
+            <label className="block text-[15px] font-semibold text-slate-700 mb-2">
+              Email
+            </label>
 
             <div className="relative">
 
@@ -150,11 +134,6 @@ function Register() {
                 placeholder="Enter your email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                autoComplete="email"
-                autoCapitalize="none"
-                autoCorrect="off"
-                spellCheck="false"
-                required
                 className="w-full h-12 bg-white border-2 border-[#e5e0ff] rounded-xl px-4 pl-11 text-[#111a3a] placeholder-[#8792b2] outline-none transition-all duration-300 focus:border-violet-500 focus:ring-2 focus:ring-violet-500/10"
               />
 
@@ -166,8 +145,8 @@ function Register() {
           <div>
 
             <label className="block text-[15px] font-semibold text-slate-700 mb-2">
-  Password
-</label>
+              Password
+            </label>
 
             <div className="relative">
 
@@ -180,11 +159,6 @@ function Register() {
                 placeholder="Enter your password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                autoComplete="new-password"
-                autoCapitalize="none"
-                autoCorrect="off"
-                spellCheck="false"
-                required
                 className="w-full h-12 bg-white border-2 border-[#e5e0ff] rounded-xl px-4 pl-11 pr-12 text-[#111a3a] placeholder-[#8792b2] outline-none transition-all duration-300 focus:border-violet-500 focus:ring-2 focus:ring-violet-500/10"
               />
 
@@ -207,11 +181,10 @@ function Register() {
           <button
             type="submit"
             disabled={loading}
-            className={`w-full h-12 rounded-xl text-white font-semibold flex items-center justify-center gap-2 transition-all duration-300 ${
-              loading
+            className={`w-full h-12 rounded-xl text-white font-semibold flex items-center justify-center gap-2 transition-all duration-300 ${loading
                 ? "bg-violet-400 cursor-not-allowed"
                 : "bg-gradient-to-r from-violet-600 to-blue-500 hover:from-violet-700 hover:to-blue-600 hover:scale-[1.01] shadow-lg shadow-violet-500/20"
-            }`}
+              }`}
           >
             <FiUserPlus className="text-lg" />
 
